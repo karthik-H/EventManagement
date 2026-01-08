@@ -1,0 +1,409 @@
+{
+  "event_management": {
+    "implementation": [
+      {
+        "id": "frontend_event_list_component",
+        "name": "EventList",
+        "file_path": "frontend/src/components/EventList.tsx",
+        "type": "component",
+        "How_is_it_connected_to_implementation": "Displays a list of events, provides UI for editing, deleting, and creating events. Calls backend endpoints via props or inline API calls.",
+        "pseudo_code": "Render a list of events\nFor each event:\n    Display event details\n    Provide Edit and Delete buttons\nProvide a button to create a new event\nOn Edit/Delete/Create, call corresponding handler functions"
+      },
+      {
+        "id": "frontend_event_card_component",
+        "name": "EventCard",
+        "file_path": "frontend/src/components/EventCard.tsx",
+        "type": "component",
+        "How_is_it_connected_to_implementation": "Displays individual event details, provides UI for editing and deleting a single event.",
+        "pseudo_code": "Receive event data as props\nDisplay event name, description, start date, end date\nProvide Edit and Delete buttons\nOn Edit/Delete, call handler functions passed via props"
+      },
+      {
+        "id": "frontend_event_form_component",
+        "name": "EventForm",
+        "file_path": "frontend/src/components/EventForm.tsx",
+        "type": "component",
+        "How_is_it_connected_to_implementation": "Provides a form for creating or editing an event, collects event name, description, start date, and end date.",
+        "pseudo_code": "Render input fields for event name, description, start date, end date\nOn submit:\n    Validate input\n    Call API to create or update event\n    On success, notify parent component"
+      },
+      {
+        "id": "backend_create_event_endpoint",
+        "name": "create_event",
+        "file_path": "backend/api/events.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for creating a new event. Receives event data from frontend, calls service to create event.",
+        "pseudo_code": "Receive POST request with event data\nCall EventService.create_event with event data\nReturn created event response"
+      },
+      {
+        "id": "backend_get_all_events_endpoint",
+        "name": "get_all_events",
+        "file_path": "backend/api/events.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for retrieving all events. Used by frontend to display event list.",
+        "pseudo_code": "Receive GET request\nCall EventService.get_all_events\nReturn list of event responses"
+      },
+      {
+        "id": "backend_get_event_endpoint",
+        "name": "get_event",
+        "file_path": "backend/api/events.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for retrieving a single event by ID. Used for viewing or editing event details.",
+        "pseudo_code": "Receive GET request with event_id\nCall EventService.get_event with event_id\nReturn event response"
+      },
+      {
+        "id": "backend_update_event_endpoint",
+        "name": "update_event",
+        "file_path": "backend/api/events.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for updating an event. Receives updated event data from frontend.",
+        "pseudo_code": "Receive PUT request with event_id and updated event data\nCall EventService.update_event with event_id and event data\nReturn updated event response"
+      },
+      {
+        "id": "backend_delete_event_endpoint",
+        "name": "delete_event",
+        "file_path": "backend/api/events.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for deleting an event. Called from frontend when user deletes an event.",
+        "pseudo_code": "Receive DELETE request with event_id\nCall EventService.delete_event with event_id\nReturn success status"
+      },
+      {
+        "id": "service_create_event_function",
+        "name": "create_event",
+        "file_path": "backend/services/event_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Service function called by create_event endpoint. Handles business logic and validation for event creation.",
+        "pseudo_code": "Validate event dates\nCreate Event object\nCall EventRepository.create to save event\nReturn EventResponse"
+      },
+      {
+        "id": "service_get_event_function",
+        "name": "get_event",
+        "file_path": "backend/services/event_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Service function called by get_event endpoint. Retrieves event by ID.",
+        "pseudo_code": "Call EventRepository.get_by_id with event_id\nReturn EventResponse"
+      },
+      {
+        "id": "service_get_all_events_function",
+        "name": "get_all_events",
+        "file_path": "backend/services/event_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Service function called by get_all_events endpoint. Retrieves all events.",
+        "pseudo_code": "Call EventRepository.get_all\nReturn list of EventResponse"
+      },
+      {
+        "id": "service_update_event_function",
+        "name": "update_event",
+        "file_path": "backend/services/event_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Service function called by update_event endpoint. Handles business logic for updating event.",
+        "pseudo_code": "Retrieve event by ID\nUpdate event fields\nCall EventRepository.update\nReturn EventResponse"
+      },
+      {
+        "id": "service_delete_event_function",
+        "name": "delete_event",
+        "file_path": "backend/services/event_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Service function called by delete_event endpoint. Handles business logic for deleting event.",
+        "pseudo_code": "Retrieve event by ID\nCall EventRepository.delete\nReturn None"
+      },
+      {
+        "id": "repository_create_event_function",
+        "name": "create",
+        "file_path": "backend/repositories/event_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Repository function called by service to persist new event in database.",
+        "pseudo_code": "Add event to database session\nCommit transaction\nReturn event"
+      },
+      {
+        "id": "repository_get_event_by_id_function",
+        "name": "get_by_id",
+        "file_path": "backend/repositories/event_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Repository function called by service to retrieve event by ID.",
+        "pseudo_code": "Query database for event with given ID\nReturn event or None"
+      },
+      {
+        "id": "repository_get_all_events_function",
+        "name": "get_all",
+        "file_path": "backend/repositories/event_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Repository function called by service to retrieve all events.",
+        "pseudo_code": "Query database for all events\nReturn list of events"
+      },
+      {
+        "id": "repository_update_event_function",
+        "name": "update",
+        "file_path": "backend/repositories/event_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Repository function called by service to update event in database.",
+        "pseudo_code": "Commit transaction\nReturn updated event"
+      },
+      {
+        "id": "repository_delete_event_function",
+        "name": "delete",
+        "file_path": "backend/repositories/event_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Repository function called by service to delete event from database.",
+        "pseudo_code": "Delete event from database session\nCommit transaction"
+      }
+    ],
+    "missing_implementations": []
+  },
+  "task_management": {
+    "implementation": [
+      {
+        "id": "frontend_tasklist_component",
+        "name": "TaskList",
+        "file_path": "frontend/src/components/TaskList.tsx",
+        "type": "component",
+        "How_is_it_connected_to_implementation": "Displays a list of tasks, provides UI for creating, editing, and deleting tasks. Calls API functions to fetch, create, update, and delete tasks.",
+        "pseudo_code": "Render a list of TaskCard components for each task\nProvide buttons for editing, deleting, and creating tasks\nOn user action, call corresponding API functions and update UI"
+      },
+      {
+        "id": "frontend_taskcard_component",
+        "name": "TaskCard",
+        "file_path": "frontend/src/components/TaskCard.tsx",
+        "type": "component",
+        "How_is_it_connected_to_implementation": "Displays individual task details including title, description, and status. Provides edit and delete buttons.",
+        "pseudo_code": "Display task title, description, and status\nShow edit and delete buttons\nOn button click, call onEdit or onDelete handler"
+      },
+      {
+        "id": "frontend_taskform_component",
+        "name": "TaskForm",
+        "file_path": "frontend/src/components/TaskForm.tsx",
+        "type": "component",
+        "How_is_it_connected_to_implementation": "Form for creating or editing a task. Handles input for title, description, status, and submits to API.",
+        "pseudo_code": "Render input fields for title, description, status\nOn submit, call onSuccess handler with form data\nOn close, call onClose handler"
+      },
+      {
+        "id": "frontend_api_get_tasks",
+        "name": "getTasks",
+        "file_path": "frontend/src/services/api.ts",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Fetches all tasks from the backend API, optionally filtered by event ID.",
+        "pseudo_code": "If eventId is provided, set params with event_id\nSend GET request to /tasks endpoint with params\nReturn response data (list of tasks)"
+      },
+      {
+        "id": "frontend_api_get_task",
+        "name": "getTask",
+        "file_path": "frontend/src/services/api.ts",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Fetches a single task by ID from the backend API.",
+        "pseudo_code": "Send GET request to /tasks/{id} endpoint\nReturn response data (task details)"
+      },
+      {
+        "id": "frontend_api_create_task",
+        "name": "createTask",
+        "file_path": "frontend/src/services/api.ts",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Sends a POST request to create a new task with title, description, status.",
+        "pseudo_code": "Send POST request to /tasks endpoint with task data\nReturn response data (created task)"
+      },
+      {
+        "id": "frontend_api_update_task",
+        "name": "updateTask",
+        "file_path": "frontend/src/services/api.ts",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Sends a PUT request to update an existing task's title, description, or status.",
+        "pseudo_code": "Send PUT request to /tasks/{id} endpoint with updated task data\nReturn response data (updated task)"
+      },
+      {
+        "id": "frontend_api_delete_task",
+        "name": "deleteTask",
+        "file_path": "frontend/src/services/api.ts",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Sends a DELETE request to remove a task by ID.",
+        "pseudo_code": "Send DELETE request to /tasks/{id} endpoint\nNo response data needed"
+      },
+      {
+        "id": "backend_tasks_create_endpoint",
+        "name": "create_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for creating a new task. Receives task data, calls TaskService.create_task.",
+        "pseudo_code": "Receive POST request with task data\nInstantiate TaskService\nCall create_task with provided data\nReturn created task response"
+      },
+      {
+        "id": "backend_tasks_get_all_endpoint",
+        "name": "get_all_tasks",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for fetching all tasks, optionally filtered by event ID. Calls TaskService.get_all_tasks.",
+        "pseudo_code": "Receive GET request, optionally with event_id\nInstantiate TaskService\nCall get_all_tasks with event_id\nReturn list of task responses"
+      },
+      {
+        "id": "backend_tasks_get_single_endpoint",
+        "name": "get_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for fetching a single task by ID. Calls TaskService.get_task.",
+        "pseudo_code": "Receive GET request with task_id\nInstantiate TaskService\nCall get_task with task_id\nReturn task response"
+      },
+      {
+        "id": "backend_tasks_update_endpoint",
+        "name": "update_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for updating a task by ID. Calls TaskService.update_task.",
+        "pseudo_code": "Receive PUT request with task_id and updated data\nInstantiate TaskService\nCall update_task with task_id and data\nReturn updated task response"
+      },
+      {
+        "id": "backend_tasks_delete_endpoint",
+        "name": "delete_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint for deleting a task by ID. Calls TaskService.delete_task.",
+        "pseudo_code": "Receive DELETE request with task_id\nInstantiate TaskService\nCall delete_task with task_id\nReturn no content"
+      },
+      {
+        "id": "backend_service_create_task",
+        "name": "TaskService.create_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Business logic for creating a task. Validates event, calls repository to create task.",
+        "pseudo_code": "Validate event exists\nCreate Task object from data\nCall repository.create to save task\nReturn TaskResponse"
+      },
+      {
+        "id": "backend_service_get_task",
+        "name": "TaskService.get_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Business logic for fetching a single task by ID. Calls repository to get task.",
+        "pseudo_code": "Call repository.get_by_id with task_id\nReturn TaskResponse"
+      },
+      {
+        "id": "backend_service_get_all_tasks",
+        "name": "TaskService.get_all_tasks",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Business logic for fetching all tasks, optionally filtered by event ID. Calls repository to get tasks.",
+        "pseudo_code": "Call repository.get_all with event_id\nReturn list of TaskResponse"
+      },
+      {
+        "id": "backend_service_update_task",
+        "name": "TaskService.update_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Business logic for updating a task. Fetches task, updates fields, calls repository to save.",
+        "pseudo_code": "Call repository.get_by_id with task_id\nUpdate task fields with new data\nCall repository.update to save changes\nReturn TaskResponse"
+      },
+      {
+        "id": "backend_service_delete_task",
+        "name": "TaskService.delete_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Business logic for deleting a task. Fetches task, calls repository to delete.",
+        "pseudo_code": "Call repository.get_by_id with task_id\nCall repository.delete to remove task"
+      },
+      {
+        "id": "backend_repo_create_task",
+        "name": "TaskRepository.create",
+        "file_path": "backend/repositories/task_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Database operation to add a new task.",
+        "pseudo_code": "Add task to database session\nCommit transaction\nReturn created task"
+      },
+      {
+        "id": "backend_repo_get_task",
+        "name": "TaskRepository.get_by_id",
+        "file_path": "backend/repositories/task_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Database operation to fetch a task by ID.",
+        "pseudo_code": "Query database for Task with given ID\nReturn Task or None"
+      },
+      {
+        "id": "backend_repo_get_all_tasks",
+        "name": "TaskRepository.get_all",
+        "file_path": "backend/repositories/task_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Database operation to fetch all tasks, optionally filtered by event ID.",
+        "pseudo_code": "Query database for all Task objects\nIf event_id is provided, filter by event_id\nReturn list of Task"
+      },
+      {
+        "id": "backend_repo_update_task",
+        "name": "TaskRepository.update",
+        "file_path": "backend/repositories/task_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Database operation to update a task.",
+        "pseudo_code": "Commit changes to database\nReturn updated task"
+      },
+      {
+        "id": "backend_repo_delete_task",
+        "name": "TaskRepository.delete",
+        "file_path": "backend/repositories/task_repository.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Database operation to delete a task.",
+        "pseudo_code": "Delete task from database session\nCommit transaction"
+      }
+    ],
+    "missing_implementations": []
+  },
+  "task_assignment": {
+    "implementation": [
+      {
+        "id": "endpoint_create_task",
+        "name": "create_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint to create a new task, requiring an event_id to associate the task with an event. Validates event existence.",
+        "pseudo_code": "When a POST request is made to /tasks:\n  - Extract task data including event_id\n  - Call TaskService.create_task with the data\n  - Return the created task"
+      },
+      {
+        "id": "service_create_task",
+        "name": "TaskService.create_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Handles business logic for creating a task, ensures the event exists, and associates the task with exactly one event.",
+        "pseudo_code": "Given TaskCreate data:\n  - Check if event with event_id exists\n    - If not, raise error\n  - Create Task object with event_id\n  - Save task via TaskRepository.create\n  - Return TaskResponse"
+      },
+      {
+        "id": "endpoint_get_all_tasks",
+        "name": "get_all_tasks",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint to retrieve all tasks, optionally filtered by event_id to view tasks for a specific event.",
+        "pseudo_code": "When a GET request is made to /tasks:\n  - If event_id is provided, filter tasks by event_id\n  - Call TaskService.get_all_tasks\n  - Return list of tasks"
+      },
+      {
+        "id": "service_get_all_tasks",
+        "name": "TaskService.get_all_tasks",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Fetches all tasks, optionally filtered by event_id, enabling viewing all tasks for a specific event.",
+        "pseudo_code": "If event_id is provided:\n  - Call TaskRepository.get_all(event_id)\nElse:\n  - Call TaskRepository.get_all()\nReturn list of TaskResponse"
+      },
+      {
+        "id": "endpoint_update_task",
+        "name": "update_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint to update a task, including reassigning it to a different event by changing event_id.",
+        "pseudo_code": "When a PUT request is made to /tasks/{task_id}:\n  - Extract update data (may include new event_id)\n  - Call TaskService.update_task\n  - Return updated task"
+      },
+      {
+        "id": "service_update_task",
+        "name": "TaskService.update_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Handles updating a task, including reassigning it to a different event. Validates new event existence.",
+        "pseudo_code": "Given task_id and TaskUpdate data:\n  - Fetch task by id\n    - If not found, raise error\n  - If event_id is provided:\n    - Check if new event exists\n      - If not, raise error\n    - Update task.event_id\n  - Update other fields\n  - Save via TaskRepository.update\n  - Return TaskResponse"
+      },
+      {
+        "id": "endpoint_delete_task",
+        "name": "delete_task",
+        "file_path": "backend/api/tasks.py",
+        "type": "endpoint",
+        "How_is_it_connected_to_implementation": "API endpoint to remove a task from its event by deleting the task.",
+        "pseudo_code": "When a DELETE request is made to /tasks/{task_id}:\n  - Call TaskService.delete_task\n  - Return no content"
+      },
+      {
+        "id": "service_delete_task",
+        "name": "TaskService.delete_task",
+        "file_path": "backend/services/task_service.py",
+        "type": "function",
+        "How_is_it_connected_to_implementation": "Handles deletion of a task, effectively removing it from its associated event.",
+        "pseudo_code": "Given task_id:\n  - Fetch task by id\n    - If not found, raise error\n  - Delete task via TaskRepository.delete"
+      }
+    ],
+    "missing_implementations": []
+  }
+}
