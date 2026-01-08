@@ -1,0 +1,3747 @@
+{
+  "function": [
+    {
+      "implementation_id": "service_get_all_events_function",
+      "test_cases": [
+        {
+          "id": "get_all_events_returns_all_events",
+          "name": "test_get_all_events_returns_all_events",
+          "description": "Should return a list of all events with correct fields and associated tasks.",
+          "type": "positive",
+          "test_setup": {
+            "given": "Database contains multiple events, each with associated tasks.",
+            "when": "get_all_events is called.",
+            "then": "Returns a list of EventResponse objects, each with correct event and task data."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_empty_db",
+          "name": "test_get_all_events_empty_db",
+          "description": "Should return an empty list when there are no events in the database.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains no events.",
+            "when": "get_all_events is called.",
+            "then": "Returns an empty list."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_event_with_no_tasks",
+          "name": "test_get_all_events_event_with_no_tasks",
+          "description": "Should return events with an empty tasks list if no tasks are associated.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains events, some of which have no associated tasks.",
+            "when": "get_all_events is called.",
+            "then": "EventResponse for those events has an empty tasks list."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_event_with_null_description",
+          "name": "test_get_all_events_event_with_null_description",
+          "description": "Should handle events with null description field correctly.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains events with description set to null.",
+            "when": "get_all_events is called.",
+            "then": "EventResponse for those events has description as null."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_db_error",
+          "name": "test_get_all_events_db_error",
+          "description": "Should handle database errors gracefully.",
+          "type": "negative",
+          "test_setup": {
+            "given": "Database connection fails or raises an exception during query.",
+            "when": "get_all_events is called.",
+            "then": "An appropriate exception is raised (e.g., HTTP 500 or custom error)."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_event_with_boundary_dates",
+          "name": "test_get_all_events_event_with_boundary_dates",
+          "description": "Should correctly return events with start_date and end_date at boundary values.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains events with start_date and end_date at minimum/maximum allowed values.",
+            "when": "get_all_events is called.",
+            "then": "EventResponse contains correct boundary date values."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_event_with_long_name",
+          "name": "test_get_all_events_event_with_long_name",
+          "description": "Should correctly handle events with very long names.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains an event with a name of maximum allowed length.",
+            "when": "get_all_events is called.",
+            "then": "EventResponse contains the full long name without truncation."
+          },
+          "implementation_id": "service_get_all_events_function"
+        },
+        {
+          "id": "get_all_events_event_with_special_characters",
+          "name": "test_get_all_events_event_with_special_characters",
+          "description": "Should correctly handle events with special characters in name and description.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains events with special characters in name and description fields.",
+            "when": "get_all_events is called.",
+            "then": "EventResponse contains the special characters as expected."
+          },
+          "implementation_id": "service_get_all_events_function"
+        }
+      ]
+    },
+    {
+      "implementation_id": "service_delete_event_function",
+      "test_cases": [
+        {
+          "id": "delete_event_success_existing_event",
+          "name": "Delete existing event successfully",
+          "description": "Verify that an existing event is deleted successfully and the function returns None.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A valid event ID for an event that exists in the database.",
+            "when": "delete_event(event_id) is called.",
+            "then": "The event is deleted from the database and the function returns None."
+          },
+          "implementation_id": "service_delete_event_function"
+        },
+        {
+          "id": "delete_event_nonexistent_event",
+          "name": "Delete non-existent event",
+          "description": "Verify that attempting to delete a non-existent event handles gracefully (e.g., no-op or raises error).",
+          "type": "negative",
+          "test_setup": {
+            "given": "An event ID that does not exist in the database.",
+            "when": "delete_event(event_id) is called.",
+            "then": "The function either returns None or raises an EventNotFound error, depending on implementation."
+          },
+          "implementation_id": "service_delete_event_function"
+        },
+        {
+          "id": "delete_event_invalid_id_none",
+          "name": "Delete event with None as ID",
+          "description": "Verify that passing None as the event ID results in an error or is handled gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "None is passed as the event ID.",
+            "when": "delete_event(None) is called.",
+            "then": "The function raises a ValueError or similar exception indicating invalid input."
+          },
+          "implementation_id": "service_delete_event_function"
+        },
+        {
+          "id": "delete_event_invalid_id_empty_string",
+          "name": "Delete event with empty string as ID",
+          "description": "Verify that passing an empty string as the event ID results in an error or is handled gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An empty string is passed as the event ID.",
+            "when": "delete_event(\"\") is called.",
+            "then": "The function raises a ValueError or similar exception indicating invalid input."
+          },
+          "implementation_id": "service_delete_event_function"
+        },
+        {
+          "id": "delete_event_invalid_id_wrong_type",
+          "name": "Delete event with wrong type as ID",
+          "description": "Verify that passing an invalid type (e.g., list, dict) as the event ID results in an error.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A non-string, non-integer type (e.g., list, dict) is passed as the event ID.",
+            "when": "delete_event([123]) or delete_event({\"id\": 123}) is called.",
+            "then": "The function raises a TypeError or similar exception indicating invalid input."
+          },
+          "implementation_id": "service_delete_event_function"
+        },
+        {
+          "id": "delete_event_already_deleted_event",
+          "name": "Delete event that was already deleted",
+          "description": "Verify that attempting to delete an event that was already deleted is handled gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An event ID for an event that was previously deleted.",
+            "when": "delete_event(event_id) is called.",
+            "then": "The function either returns None or raises an EventNotFound error, depending on implementation."
+          },
+          "implementation_id": "service_delete_event_function"
+        },
+        {
+          "id": "delete_event_repository_exception",
+          "name": "Delete event with repository exception",
+          "description": "Verify that if the EventRepository.delete method raises an exception, it is handled or propagated correctly.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A valid event ID, but EventRepository.delete raises a database exception.",
+            "when": "delete_event(event_id) is called.",
+            "then": "The function propagates the exception or handles it according to business logic."
+          },
+          "implementation_id": "service_delete_event_function"
+        }
+      ]
+    },
+    {
+      "implementation_id": "repository_create_event_function",
+      "test_cases": [
+        {
+          "id": "create_event_valid",
+          "name": "Create Event with Valid Data",
+          "description": "Test creating an event with all required and optional fields populated with valid values.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": "Annual Meeting",
+                "description": "Company-wide annual meeting.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db": "Clean database session"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "event": {
+                "id": "Auto-generated integer",
+                "name": "Annual Meeting",
+                "description": "Company-wide annual meeting.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z",
+                "created_at": "Set to current UTC time",
+                "updated_at": "Set to current UTC time"
+              },
+              "db_state": "Event is persisted in the database"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        },
+        {
+          "id": "create_event_missing_required",
+          "name": "Create Event Missing Required Fields",
+          "description": "Test creating an event with missing required fields (name, start_date, end_date).",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": null,
+                "description": "No name provided.",
+                "start_date": null,
+                "end_date": null
+              },
+              "db": "Clean database session"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "error": "IntegrityError or validation error due to missing required fields",
+              "db_state": "No event persisted"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        },
+        {
+          "id": "create_event_empty_name",
+          "name": "Create Event with Empty Name",
+          "description": "Test creating an event with an empty string for the name field.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": "",
+                "description": "Empty name field.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db": "Clean database session"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "event": {
+                "id": "Auto-generated integer",
+                "name": "",
+                "description": "Empty name field.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db_state": "Event is persisted with empty name if not validated at model/service layer"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        },
+        {
+          "id": "create_event_start_after_end",
+          "name": "Create Event with Start Date After End Date",
+          "description": "Test creating an event where start_date is after end_date.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": "Invalid Date Event",
+                "description": "Start date is after end date.",
+                "start_date": "2026-02-02T10:00:00Z",
+                "end_date": "2026-02-01T09:00:00Z"
+              },
+              "db": "Clean database session"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "event": {
+                "id": "Auto-generated integer",
+                "name": "Invalid Date Event",
+                "description": "Start date is after end date.",
+                "start_date": "2026-02-02T10:00:00Z",
+                "end_date": "2026-02-01T09:00:00Z"
+              },
+              "db_state": "Event is persisted unless validation is enforced at service/model layer"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        },
+        {
+          "id": "create_event_long_name",
+          "name": "Create Event with Very Long Name",
+          "description": "Test creating an event with a name at the maximum allowed length.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": "T.repeat(255)",
+                "description": "Max length name.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db": "Clean database session"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "event": {
+                "id": "Auto-generated integer",
+                "name": "T.repeat(255)",
+                "description": "Max length name.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db_state": "Event is persisted if within DB column limit"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        },
+        {
+          "id": "create_event_db_failure",
+          "name": "Create Event with Database Failure",
+          "description": "Test behavior when the database session fails to commit (e.g., connection error, constraint violation).",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": "DB Failure Event",
+                "description": "Simulate DB failure.",
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db": "Session configured to fail on commit"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "error": "DatabaseError or IntegrityError is raised",
+              "db_state": "No event persisted"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        },
+        {
+          "id": "create_event_null_description",
+          "name": "Create Event with Null Description",
+          "description": "Test creating an event with a null description field.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "event": {
+                "name": "No Description Event",
+                "description": null,
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db": "Clean database session"
+            },
+            "when": "EventRepository.create(event) is called",
+            "then": {
+              "event": {
+                "id": "Auto-generated integer",
+                "name": "No Description Event",
+                "description": null,
+                "start_date": "2026-02-01T09:00:00Z",
+                "end_date": "2026-02-01T17:00:00Z"
+              },
+              "db_state": "Event is persisted with null description"
+            }
+          },
+          "implementation_id": "repository_create_event_function"
+        }
+      ]
+    },
+    {
+      "implementation_id": "repository_get_event_by_id_function",
+      "test_cases": [
+        {
+          "id": "get_by_id_valid_event",
+          "name": "test_get_by_id_with_existing_event",
+          "description": "Should return the event object when a valid existing event ID is provided.",
+          "type": "positive",
+          "test_setup": {
+            "given": "An event with ID 1 exists in the database.",
+            "when": "get_by_id(1) is called.",
+            "then": "The event object with ID 1 is returned."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_nonexistent_event",
+          "name": "test_get_by_id_with_nonexistent_event",
+          "description": "Should return None when a non-existent event ID is provided.",
+          "type": "negative",
+          "test_setup": {
+            "given": "No event with ID 999 exists in the database.",
+            "when": "get_by_id(999) is called.",
+            "then": "None is returned."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_null_id",
+          "name": "test_get_by_id_with_null_id",
+          "description": "Should handle None as event ID gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No event with ID None exists in the database.",
+            "when": "get_by_id(null) is called.",
+            "then": "None is returned or an appropriate error is raised."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_string_id",
+          "name": "test_get_by_id_with_string_id",
+          "description": "Should handle string as event ID gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No event with ID 'abc' exists in the database.",
+            "when": "get_by_id('abc') is called.",
+            "then": "None is returned or an appropriate error is raised."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_negative_id",
+          "name": "test_get_by_id_with_negative_id",
+          "description": "Should handle negative event ID gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No event with ID -1 exists in the database.",
+            "when": "get_by_id(-1) is called.",
+            "then": "None is returned."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_zero_id",
+          "name": "test_get_by_id_with_zero_id",
+          "description": "Should handle zero as event ID gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No event with ID 0 exists in the database.",
+            "when": "get_by_id(0) is called.",
+            "then": "None is returned."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_large_id",
+          "name": "test_get_by_id_with_large_id",
+          "description": "Should handle very large event ID gracefully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No event with ID 999999999999 exists in the database.",
+            "when": "get_by_id(999999999999) is called.",
+            "then": "None is returned."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        },
+        {
+          "id": "get_by_id_database_error",
+          "name": "test_get_by_id_database_error",
+          "description": "Should handle database errors gracefully.",
+          "type": "negative",
+          "test_setup": {
+            "given": "Database connection is unavailable or query fails.",
+            "when": "get_by_id(1) is called.",
+            "then": "An appropriate exception is raised or None is returned."
+          },
+          "implementation_id": "repository_get_event_by_id_function"
+        }
+      ]
+    },
+    {
+      "implementation_id": "repository_update_event_function",
+      "test_cases": [
+        {
+          "id": "update_event_success",
+          "name": "Update event with valid data",
+          "description": "Verify that an existing event is updated successfully when valid changes are made and committed.",
+          "type": "positive",
+          "test_setup": {
+            "given": "An existing event object with valid updated fields (name, description, start_date, end_date) already attached to the session.",
+            "when": "update(event) is called.",
+            "then": "The event is committed, refreshed, and the updated event object is returned with the new values."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_no_changes",
+          "name": "Update event with no changes",
+          "description": "Verify that calling update on an event with no changes still commits and refreshes the event.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An existing event object with no changes made to its fields.",
+            "when": "update(event) is called.",
+            "then": "The event is committed, refreshed, and the same event object is returned."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_missing_required_fields",
+          "name": "Update event with missing required fields",
+          "description": "Verify that updating an event with missing required fields (e.g., name or dates) raises an error or fails validation.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An event object with missing required fields (e.g., name=None).",
+            "when": "update(event) is called.",
+            "then": "An exception is raised or the database rejects the commit due to missing required fields."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_invalid_dates",
+          "name": "Update event with invalid date range",
+          "description": "Verify that updating an event with start_date after end_date is handled appropriately.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An event object where start_date > end_date.",
+            "when": "update(event) is called.",
+            "then": "An exception is raised or the database rejects the commit due to invalid date range."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_boundary_dates",
+          "name": "Update event with boundary date values",
+          "description": "Verify that updating an event with start_date and end_date at boundary values (e.g., minimum/maximum allowed dates) works as expected.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An event object with start_date and end_date set to the earliest and latest allowed dates.",
+            "when": "update(event) is called.",
+            "then": "The event is committed, refreshed, and returned with the boundary date values."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_nonexistent",
+          "name": "Update event that does not exist in database",
+          "description": "Verify that updating an event object not present in the database raises an error or does not update anything.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An event object with an ID that does not exist in the database.",
+            "when": "update(event) is called.",
+            "then": "An exception is raised or the database does not update any event."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_concurrent_modification",
+          "name": "Update event with concurrent modification",
+          "description": "Verify that updating an event that has been modified by another transaction handles concurrency issues.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An event object that is being updated in another transaction/session concurrently.",
+            "when": "update(event) is called.",
+            "then": "The function either succeeds, fails, or raises a concurrency exception depending on the database isolation level."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_db_failure",
+          "name": "Update event with database failure",
+          "description": "Verify that a database failure during commit raises an appropriate exception.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An event object and a simulated database failure (e.g., connection lost) during commit.",
+            "when": "update(event) is called.",
+            "then": "An exception is raised and the event is not updated."
+          },
+          "implementation_id": "repository_update_event_function"
+        },
+        {
+          "id": "update_event_large_description",
+          "name": "Update event with maximum length description",
+          "description": "Verify that updating an event with a description at the maximum allowed length is handled correctly.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An event object with description set to the maximum allowed length (e.g., 'T.repeat(255)').",
+            "when": "update(event) is called.",
+            "then": "The event is committed, refreshed, and returned with the long description."
+          },
+          "implementation_id": "repository_update_event_function"
+        }
+      ]
+    },
+    {
+      "implementation_id": "repository_delete_event_function",
+      "test_cases": [
+        {
+          "id": "delete_event_positive_existing",
+          "name": "delete_existing_event",
+          "description": "Delete an event that exists in the database. The event should be removed and no longer retrievable.",
+          "type": "positive",
+          "test_setup": {
+            "given": "An Event object that exists in the database session.",
+            "when": "EventRepository.delete(event) is called with the existing Event object.",
+            "then": "The event is deleted from the database. Subsequent queries for the event by ID return None."
+          },
+          "implementation_id": "repository_delete_event_function"
+        },
+        {
+          "id": "delete_event_negative_nonexistent",
+          "name": "delete_nonexistent_event",
+          "description": "Attempt to delete an Event object that does not exist in the database. Should raise an error or have no effect.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An Event object that is not present in the database session.",
+            "when": "EventRepository.delete(event) is called with the non-existent Event object.",
+            "then": "An exception is raised (e.g., sqlalchemy.orm.exc.UnmappedInstanceError) or the operation is a no-op depending on ORM behavior."
+          },
+          "implementation_id": "repository_delete_event_function"
+        },
+        {
+          "id": "delete_event_edge_null",
+          "name": "delete_null_event",
+          "description": "Attempt to delete a None value instead of an Event object. Should raise a TypeError or ORM-specific error.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A None value is provided instead of an Event object.",
+            "when": "EventRepository.delete(None) is called.",
+            "then": "A TypeError or ORM-specific exception is raised."
+          },
+          "implementation_id": "repository_delete_event_function"
+        },
+        {
+          "id": "delete_event_edge_multiple_deletes",
+          "name": "delete_event_twice",
+          "description": "Attempt to delete the same Event object twice. The second deletion should raise an error or be a no-op.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An Event object that exists in the database session.",
+            "when": "EventRepository.delete(event) is called twice in succession with the same Event object.",
+            "then": "The first call deletes the event. The second call raises an exception or does nothing, depending on ORM behavior."
+          },
+          "implementation_id": "repository_delete_event_function"
+        },
+        {
+          "id": "delete_event_negative_invalid_type",
+          "name": "delete_invalid_type",
+          "description": "Attempt to delete an object of the wrong type (not an Event). Should raise an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An object that is not an instance of Event (e.g., a string or integer).",
+            "when": "EventRepository.delete(obj) is called with the invalid object.",
+            "then": "A TypeError or ORM-specific exception is raised."
+          },
+          "implementation_id": "repository_delete_event_function"
+        },
+        {
+          "id": "delete_event_edge_event_with_tasks",
+          "name": "delete_event_with_tasks",
+          "description": "Delete an Event that has associated Task objects. Should handle cascading deletes or raise an integrity error if not configured.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An Event object with associated Task objects exists in the database session.",
+            "when": "EventRepository.delete(event) is called with the Event object.",
+            "then": "The event and its associated tasks are deleted if cascading is configured, or an integrity error is raised if not."
+          },
+          "implementation_id": "repository_delete_event_function"
+        },
+        {
+          "id": "delete_event_negative_db_error",
+          "name": "delete_event_db_error",
+          "description": "Simulate a database error during deletion (e.g., connection lost, transaction rollback). Should raise a database exception.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An Event object exists, but the database session is in an error state (e.g., closed, rolled back).",
+            "when": "EventRepository.delete(event) is called.",
+            "then": "A database exception (e.g., sqlalchemy.exc.DBAPIError) is raised."
+          },
+          "implementation_id": "repository_delete_event_function"
+        }
+      ]
+    },
+    {
+      "implementation_id": "frontend_api_get_tasks",
+      "test_cases": [
+        {
+          "id": "get_all_tasks_success",
+          "name": "Fetch all tasks successfully",
+          "description": "Verify that getTasks returns all tasks when no eventId is provided.",
+          "type": "positive",
+          "test_setup": {
+            "given": "No eventId parameter; backend contains multiple tasks.",
+            "when": "getTasks() is called without arguments.",
+            "then": "Returns a list of all tasks with correct fields (id, title, description, status)."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_by_event_success",
+          "name": "Fetch tasks for a specific event",
+          "description": "Verify that getTasks returns only tasks for the specified eventId.",
+          "type": "positive",
+          "test_setup": {
+            "given": "eventId parameter is set to a valid event with associated tasks.",
+            "when": "getTasks(eventId) is called.",
+            "then": "Returns a list of tasks filtered by eventId, all tasks have event_id equal to the provided eventId."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_no_tasks_exist",
+          "name": "No tasks exist in backend",
+          "description": "Verify that getTasks returns an empty list when there are no tasks in the backend.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No tasks exist in the backend database.",
+            "when": "getTasks() is called.",
+            "then": "Returns an empty list."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_event_no_tasks",
+          "name": "No tasks for specific event",
+          "description": "Verify that getTasks returns an empty list when no tasks exist for the given eventId.",
+          "type": "edge",
+          "test_setup": {
+            "given": "eventId parameter is set to a valid event with no associated tasks.",
+            "when": "getTasks(eventId) is called.",
+            "then": "Returns an empty list."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_invalid_event_id",
+          "name": "Invalid eventId parameter",
+          "description": "Verify that getTasks handles invalid eventId gracefully.",
+          "type": "negative",
+          "test_setup": {
+            "given": "eventId parameter is set to an invalid or non-existent event ID.",
+            "when": "getTasks(eventId) is called.",
+            "then": "Returns an empty list or an error response, depending on backend implementation."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_backend_error",
+          "name": "Backend API error",
+          "description": "Verify that getTasks handles backend API errors (e.g., 500 Internal Server Error).",
+          "type": "negative",
+          "test_setup": {
+            "given": "Backend API returns a 500 error when /tasks endpoint is called.",
+            "when": "getTasks() is called.",
+            "then": "Function throws an error or returns an error object indicating failure."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_malformed_response",
+          "name": "Malformed backend response",
+          "description": "Verify that getTasks handles malformed or unexpected backend responses.",
+          "type": "negative",
+          "test_setup": {
+            "given": "Backend API returns a response with missing or incorrect fields.",
+            "when": "getTasks() is called.",
+            "then": "Function throws an error or returns an empty list, depending on error handling."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_large_number",
+          "name": "Large number of tasks",
+          "description": "Verify that getTasks can handle a very large number of tasks returned from the backend.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Backend contains a large number of tasks (e.g., 10,000).",
+            "when": "getTasks() is called.",
+            "then": "Returns a list containing all tasks without performance issues."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        },
+        {
+          "id": "get_tasks_boundary_event_id",
+          "name": "Boundary eventId values",
+          "description": "Verify that getTasks handles boundary values for eventId (e.g., 0, max int).",
+          "type": "edge",
+          "test_setup": {
+            "given": "eventId parameter is set to boundary values (0, max int).",
+            "when": "getTasks(eventId) is called.",
+            "then": "Returns correct results or handles errors gracefully."
+          },
+          "implementation_id": "frontend_api_get_tasks"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_service_create_task",
+      "test_cases": [
+        {
+          "id": "create_task_success",
+          "name": "Create task successfully with valid event and data",
+          "description": "Should create a task when provided with valid event_id and all required fields.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": "Test Task",
+                "description": "A valid task description.",
+                "status": "TO_DO",
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "response": {
+                "title": "Test Task",
+                "description": "A valid task description.",
+                "status": "TO_DO",
+                "event_id": 1
+              },
+              "type": "TaskResponse",
+              "no_exception": true
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_event_not_found",
+          "name": "Fail to create task when event does not exist",
+          "description": "Should raise HTTP 404 when event_id does not exist.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "event_exists": false,
+              "task_data": {
+                "title": "Test Task",
+                "description": "A valid task description.",
+                "status": "TO_DO",
+                "event_id": 999
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "exception": {
+                "type": "HTTPException",
+                "status_code": 404,
+                "detail": "Event with id 999 not found"
+              }
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_missing_title",
+          "name": "Fail to create task with missing title",
+          "description": "Should raise validation error when title is missing.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": null,
+                "description": "A valid task description.",
+                "status": "TO_DO",
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "exception": {
+                "type": "ValidationError",
+                "field": "title"
+              }
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_missing_status",
+          "name": "Fail to create task with missing status",
+          "description": "Should raise validation error when status is missing.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": "Test Task",
+                "description": "A valid task description.",
+                "status": null,
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "exception": {
+                "type": "ValidationError",
+                "field": "status"
+              }
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_long_title",
+          "name": "Create task with maximum allowed title length",
+          "description": "Should create a task when title is at the maximum allowed length.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": "T.repeat(255)",
+                "description": "Edge case for long title.",
+                "status": "TO_DO",
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "response": {
+                "title": "T.repeat(255)",
+                "description": "Edge case for long title.",
+                "status": "TO_DO",
+                "event_id": 1
+              },
+              "type": "TaskResponse",
+              "no_exception": true
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_empty_description",
+          "name": "Create task with empty description",
+          "description": "Should create a task when description is empty.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": "Test Task",
+                "description": "",
+                "status": "TO_DO",
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "response": {
+                "title": "Test Task",
+                "description": "",
+                "status": "TO_DO",
+                "event_id": 1
+              },
+              "type": "TaskResponse",
+              "no_exception": true
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_invalid_status",
+          "name": "Fail to create task with invalid status value",
+          "description": "Should raise validation error when status is not a valid enum value.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": "Test Task",
+                "description": "A valid task description.",
+                "status": "INVALID_STATUS",
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "exception": {
+                "type": "ValidationError",
+                "field": "status"
+              }
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_boundary_event_id",
+          "name": "Create task with boundary event_id value",
+          "description": "Should create a task when event_id is at the minimum valid value (e.g., 1).",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data": {
+                "title": "Boundary Event Task",
+                "description": "Testing event_id boundary.",
+                "status": "TO_DO",
+                "event_id": 1
+              }
+            },
+            "when": "TaskService.create_task(task_data) is called",
+            "then": {
+              "response": {
+                "title": "Boundary Event Task",
+                "description": "Testing event_id boundary.",
+                "status": "TO_DO",
+                "event_id": 1
+              },
+              "type": "TaskResponse",
+              "no_exception": true
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        },
+        {
+          "id": "create_task_all_status_values",
+          "name": "Create task with all valid status values",
+          "description": "Should create tasks for each valid status value (TO_DO, IN_PROGRESS, COMPLETED).",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "event_exists": true,
+              "task_data_list": [
+                {
+                  "title": "To Do Task",
+                  "description": "Task to do.",
+                  "status": "TO_DO",
+                  "event_id": 1
+                },
+                {
+                  "title": "In Progress Task",
+                  "description": "Task in progress.",
+                  "status": "IN_PROGRESS",
+                  "event_id": 1
+                },
+                {
+                  "title": "Completed Task",
+                  "description": "Task completed.",
+                  "status": "COMPLETED",
+                  "event_id": 1
+                }
+              ]
+            },
+            "when": "TaskService.create_task(task_data) is called for each task_data in task_data_list",
+            "then": {
+              "response_list": [
+                {
+                  "title": "To Do Task",
+                  "status": "TO_DO"
+                },
+                {
+                  "title": "In Progress Task",
+                  "status": "IN_PROGRESS"
+                },
+                {
+                  "title": "Completed Task",
+                  "status": "COMPLETED"
+                }
+              ],
+              "type": "TaskResponse",
+              "no_exception": true
+            }
+          },
+          "implementation_id": "backend_service_create_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_service_get_task",
+      "test_cases": [
+        {
+          "id": "get_task_valid_id",
+          "name": "Fetch task with valid ID",
+          "description": "Should return the correct TaskResponse when a valid task ID is provided and the task exists.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "task_id": 1,
+              "repository_state": {
+                "tasks": [
+                  {
+                    "id": 1,
+                    "title": "Sample Task",
+                    "description": "A sample task for testing.",
+                    "status": "To Do"
+                  }
+                ]
+              }
+            },
+            "when": "get_task(1) is called",
+            "then": {
+              "response": {
+                "id": 1,
+                "title": "Sample Task",
+                "description": "A sample task for testing.",
+                "status": "To Do"
+              }
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_nonexistent_id",
+          "name": "Fetch task with non-existent ID",
+          "description": "Should handle the case where the provided task ID does not exist in the repository.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 999,
+              "repository_state": {
+                "tasks": []
+              }
+            },
+            "when": "get_task(999) is called",
+            "then": {
+              "error": "TaskNotFoundError",
+              "response": null
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_invalid_id_type",
+          "name": "Fetch task with invalid ID type",
+          "description": "Should handle the case where the provided task ID is not an integer (e.g., string, float).",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": "abc"
+            },
+            "when": "get_task('abc') is called",
+            "then": {
+              "error": "InvalidTaskIdError",
+              "response": null
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_none_id",
+          "name": "Fetch task with None as ID",
+          "description": "Should handle the case where the provided task ID is None.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": null
+            },
+            "when": "get_task(None) is called",
+            "then": {
+              "error": "InvalidTaskIdError",
+              "response": null
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_min_id",
+          "name": "Fetch task with minimum valid ID",
+          "description": "Should return the correct TaskResponse when the minimum valid task ID (e.g., 1) is provided and the task exists.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 1,
+              "repository_state": {
+                "tasks": [
+                  {
+                    "id": 1,
+                    "title": "Min ID Task",
+                    "description": "Task with minimum ID.",
+                    "status": "Completed"
+                  }
+                ]
+              }
+            },
+            "when": "get_task(1) is called",
+            "then": {
+              "response": {
+                "id": 1,
+                "title": "Min ID Task",
+                "description": "Task with minimum ID.",
+                "status": "Completed"
+              }
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_max_id",
+          "name": "Fetch task with maximum valid ID",
+          "description": "Should return the correct TaskResponse when the maximum valid task ID is provided and the task exists.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 2147483647,
+              "repository_state": {
+                "tasks": [
+                  {
+                    "id": 2147483647,
+                    "title": "Max ID Task",
+                    "description": "Task with maximum ID.",
+                    "status": "In Progress"
+                  }
+                ]
+              }
+            },
+            "when": "get_task(2147483647) is called",
+            "then": {
+              "response": {
+                "id": 2147483647,
+                "title": "Max ID Task",
+                "description": "Task with maximum ID.",
+                "status": "In Progress"
+              }
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_deleted_task",
+          "name": "Fetch deleted task",
+          "description": "Should handle the case where the task has been deleted and is no longer available.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 2,
+              "repository_state": {
+                "tasks": []
+              }
+            },
+            "when": "get_task(2) is called",
+            "then": {
+              "error": "TaskNotFoundError",
+              "response": null
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_max_field_lengths",
+          "name": "Fetch task with maximum field lengths",
+          "description": "Should correctly return a task where the title and description are at their maximum allowed lengths.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 3,
+              "repository_state": {
+                "tasks": [
+                  {
+                    "id": 3,
+                    "title": "T.repeat(255)",
+                    "description": "D.repeat(1024)",
+                    "status": "To Do"
+                  }
+                ]
+              }
+            },
+            "when": "get_task(3) is called",
+            "then": {
+              "response": {
+                "id": 3,
+                "title": "T.repeat(255)",
+                "description": "D.repeat(1024)",
+                "status": "To Do"
+              }
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        },
+        {
+          "id": "get_task_repository_error",
+          "name": "Repository error when fetching task",
+          "description": "Should handle the case where the repository raises an unexpected error (e.g., database connection failure).",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 4,
+              "repository_state": "raises DatabaseConnectionError"
+            },
+            "when": "get_task(4) is called",
+            "then": {
+              "error": "DatabaseConnectionError",
+              "response": null
+            }
+          },
+          "implementation_id": "backend_service_get_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_service_update_task",
+      "test_cases": [
+        {
+          "id": "update_valid_task_all_fields",
+          "name": "Update all fields of an existing task with valid data",
+          "description": "Verifies that updating all fields of a valid existing task works correctly.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "task_id": 1,
+              "existing_task": {
+                "title": "Old Title",
+                "description": "Old Description",
+                "status": "To Do"
+              },
+              "update_data": {
+                "title": "New Title",
+                "description": "New Description",
+                "status": "In Progress"
+              }
+            },
+            "when": "TaskService.update_task(task_id=1, update_data)",
+            "then": {
+              "response": {
+                "task_id": 1,
+                "title": "New Title",
+                "description": "New Description",
+                "status": "In Progress"
+              }
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_partial_fields",
+          "name": "Update only some fields of an existing task",
+          "description": "Verifies that updating only a subset of fields (e.g., just the status) works and other fields remain unchanged.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "task_id": 2,
+              "existing_task": {
+                "title": "Task Title",
+                "description": "Task Description",
+                "status": "To Do"
+              },
+              "update_data": {
+                "status": "Completed"
+              }
+            },
+            "when": "TaskService.update_task(task_id=2, update_data)",
+            "then": {
+              "response": {
+                "task_id": 2,
+                "title": "Task Title",
+                "description": "Task Description",
+                "status": "Completed"
+              }
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_invalid_id",
+          "name": "Update task with non-existent task_id",
+          "description": "Verifies that updating a task with an invalid/non-existent ID returns an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 9999,
+              "update_data": {
+                "title": "Any Title"
+              }
+            },
+            "when": "TaskService.update_task(task_id=9999, update_data)",
+            "then": {
+              "error": "TaskNotFoundError"
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_invalid_status",
+          "name": "Update task with invalid status value",
+          "description": "Verifies that updating a task with a status not in allowed values returns a validation error.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 3,
+              "existing_task": {
+                "title": "Title",
+                "description": "Description",
+                "status": "To Do"
+              },
+              "update_data": {
+                "status": "Archived"
+              }
+            },
+            "when": "TaskService.update_task(task_id=3, update_data)",
+            "then": {
+              "error": "InvalidStatusError"
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_empty_title",
+          "name": "Update task with empty title",
+          "description": "Verifies that updating a task with an empty title returns a validation error.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 4,
+              "existing_task": {
+                "title": "Valid Title",
+                "description": "Valid Description",
+                "status": "To Do"
+              },
+              "update_data": {
+                "title": ""
+              }
+            },
+            "when": "TaskService.update_task(task_id=4, update_data)",
+            "then": {
+              "error": "InvalidTitleError"
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_long_title",
+          "name": "Update task with maximum allowed title length",
+          "description": "Verifies that updating a task with a title at the maximum allowed length succeeds.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 5,
+              "existing_task": {
+                "title": "Short",
+                "description": "Desc",
+                "status": "To Do"
+              },
+              "update_data": {
+                "title": "T.repeat(255)"
+              }
+            },
+            "when": "TaskService.update_task(task_id=5, update_data)",
+            "then": {
+              "response": {
+                "task_id": 5,
+                "title": "T.repeat(255)",
+                "description": "Desc",
+                "status": "To Do"
+              }
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_overlong_title",
+          "name": "Update task with title exceeding maximum length",
+          "description": "Verifies that updating a task with a title longer than allowed returns a validation error.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 6,
+              "existing_task": {
+                "title": "Short",
+                "description": "Desc",
+                "status": "To Do"
+              },
+              "update_data": {
+                "title": "T.repeat(256)"
+              }
+            },
+            "when": "TaskService.update_task(task_id=6, update_data)",
+            "then": {
+              "error": "TitleTooLongError"
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_empty_description",
+          "name": "Update task with empty description",
+          "description": "Verifies that updating a task with an empty description is allowed if requirements permit.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 7,
+              "existing_task": {
+                "title": "Title",
+                "description": "Old Description",
+                "status": "To Do"
+              },
+              "update_data": {
+                "description": ""
+              }
+            },
+            "when": "TaskService.update_task(task_id=7, update_data)",
+            "then": {
+              "response": {
+                "task_id": 7,
+                "title": "Title",
+                "description": "",
+                "status": "To Do"
+              }
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_no_changes",
+          "name": "Update task with no changes",
+          "description": "Verifies that calling update with no changes returns the original task unchanged.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task_id": 8,
+              "existing_task": {
+                "title": "Title",
+                "description": "Description",
+                "status": "To Do"
+              },
+              "update_data": {}
+            },
+            "when": "TaskService.update_task(task_id=8, update_data)",
+            "then": {
+              "response": {
+                "task_id": 8,
+                "title": "Title",
+                "description": "Description",
+                "status": "To Do"
+              }
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        },
+        {
+          "id": "update_task_repository_failure",
+          "name": "Repository update failure",
+          "description": "Verifies that if the repository fails to update the task, an appropriate error is returned.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task_id": 9,
+              "existing_task": {
+                "title": "Title",
+                "description": "Description",
+                "status": "To Do"
+              },
+              "update_data": {
+                "title": "New Title"
+              },
+              "repository_update_failure": true
+            },
+            "when": "TaskService.update_task(task_id=9, update_data)",
+            "then": {
+              "error": "RepositoryUpdateError"
+            }
+          },
+          "implementation_id": "backend_service_update_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_service_delete_task",
+      "test_cases": [
+        {
+          "id": "delete_existing_task_success",
+          "name": "Delete an existing task successfully",
+          "description": "Verify that deleting a valid, existing task removes it from the repository.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A task with ID 1 exists in the repository.",
+            "when": "delete_task(1) is called.",
+            "then": "The task is deleted and no longer retrievable from the repository."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_nonexistent_task",
+          "name": "Attempt to delete a non-existent task",
+          "description": "Verify that attempting to delete a task that does not exist returns an appropriate error or does nothing.",
+          "type": "negative",
+          "test_setup": {
+            "given": "No task with ID 999 exists in the repository.",
+            "when": "delete_task(999) is called.",
+            "then": "An error is raised or a 'not found' response is returned."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_invalid_id_type",
+          "name": "Delete task with invalid ID type",
+          "description": "Verify that passing an invalid ID type (e.g., string, None) raises a validation error.",
+          "type": "negative",
+          "test_setup": {
+            "given": "The input task_id is 'abc' (string).",
+            "when": "delete_task('abc') is called.",
+            "then": "A validation error is raised indicating the ID type is invalid."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_none_id",
+          "name": "Delete task with None as ID",
+          "description": "Verify that passing None as the task ID raises a validation error.",
+          "type": "edge",
+          "test_setup": {
+            "given": "The input task_id is None.",
+            "when": "delete_task(None) is called.",
+            "then": "A validation error is raised indicating the ID cannot be None."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_db_error",
+          "name": "Repository error during delete",
+          "description": "Verify that a repository/database error during deletion is handled gracefully.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A task with ID 2 exists, but the repository.delete method raises a database error.",
+            "when": "delete_task(2) is called.",
+            "then": "An error is raised or an appropriate error response is returned."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_already_deleted",
+          "name": "Delete a task that was already deleted",
+          "description": "Verify that attempting to delete a task that was already deleted behaves as expected.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A task with ID 3 existed but was deleted previously.",
+            "when": "delete_task(3) is called.",
+            "then": "An error is raised or a 'not found' response is returned."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_boundary_id_zero",
+          "name": "Delete task with boundary ID value (0)",
+          "description": "Verify behavior when attempting to delete a task with ID 0 (boundary value).",
+          "type": "edge",
+          "test_setup": {
+            "given": "No task with ID 0 exists in the repository.",
+            "when": "delete_task(0) is called.",
+            "then": "An error is raised or a 'not found' response is returned."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_boundary_id_negative",
+          "name": "Delete task with negative ID",
+          "description": "Verify behavior when attempting to delete a task with a negative ID.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No task with ID -1 exists in the repository.",
+            "when": "delete_task(-1) is called.",
+            "then": "A validation error is raised or a 'not found' response is returned."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_with_long_id",
+          "name": "Delete task with very large ID value",
+          "description": "Verify behavior when attempting to delete a task with a very large ID value.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No task with ID 999999999999 exists in the repository.",
+            "when": "delete_task(999999999999) is called.",
+            "then": "An error is raised or a 'not found' response is returned."
+          },
+          "implementation_id": "backend_service_delete_task"
+        },
+        {
+          "id": "delete_task_with_special_char_id",
+          "name": "Delete task with special character ID",
+          "description": "Verify that passing a special character as ID raises a validation error.",
+          "type": "negative",
+          "test_setup": {
+            "given": "The input task_id is '@!#'.",
+            "when": "delete_task('@!#') is called.",
+            "then": "A validation error is raised indicating the ID type is invalid."
+          },
+          "implementation_id": "backend_service_delete_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_repo_create_task",
+      "test_cases": [
+        {
+          "id": "create_task_valid",
+          "name": "Create task with valid data",
+          "description": "Verify that a task is created successfully when all required fields are provided with valid values.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "Sample Task",
+                "description": "This is a sample task.",
+                "status": "To Do",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "task": {
+                "id": "auto-generated",
+                "title": "Sample Task",
+                "description": "This is a sample task.",
+                "status": "To Do",
+                "event_id": 1,
+                "created_at": "auto-generated",
+                "updated_at": "auto-generated"
+              }
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_missing_title",
+          "name": "Create task with missing title",
+          "description": "Verify that creating a task without a title (required field) raises an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": null,
+                "description": "No title provided.",
+                "status": "To Do",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "error": "IntegrityError or ValueError for missing required field 'title'"
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_missing_event_id",
+          "name": "Create task with missing event_id",
+          "description": "Verify that creating a task without an event_id (required foreign key) raises an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "Task without event",
+                "description": "Missing event_id.",
+                "status": "To Do",
+                "event_id": null
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "error": "IntegrityError or ValueError for missing required field 'event_id'"
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_invalid_status",
+          "name": "Create task with invalid status",
+          "description": "Verify that creating a task with a status not in the allowed enum raises an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "Task with bad status",
+                "description": "Status is not valid.",
+                "status": "NotAStatus",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "error": "ValueError or StatementError for invalid enum value"
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_empty_title",
+          "name": "Create task with empty title",
+          "description": "Verify that creating a task with an empty string for title (boundary case) is handled correctly.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "",
+                "description": "Empty title.",
+                "status": "To Do",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "task_or_error": "Depends on model validation: either task is created with empty title or error is raised"
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_long_title",
+          "name": "Create task with very long title",
+          "description": "Verify that creating a task with a very long title (boundary case) is handled correctly.",
+          "type": "edge",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "T.repeat(255)",
+                "description": "Long title test.",
+                "status": "To Do",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "task_or_error": "Depends on database column length: either task is created or error is raised"
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_null_description",
+          "name": "Create task with null description",
+          "description": "Verify that creating a task with a null description (optional field) succeeds.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "Task without description",
+                "description": null,
+                "status": "To Do",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "task": {
+                "title": "Task without description",
+                "description": null,
+                "status": "To Do",
+                "event_id": 1
+              }
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_default_status",
+          "name": "Create task with default status",
+          "description": "Verify that creating a task without specifying status sets it to the default value 'To Do'.",
+          "type": "positive",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "Default status task",
+                "description": "No status provided.",
+                "event_id": 1
+              }
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "task": {
+                "title": "Default status task",
+                "description": "No status provided.",
+                "status": "To Do",
+                "event_id": 1
+              }
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        },
+        {
+          "id": "create_task_commit_failure",
+          "name": "Create task with simulated commit failure",
+          "description": "Verify that if the database commit fails, the function raises an exception and does not return a task.",
+          "type": "negative",
+          "test_setup": {
+            "given": {
+              "task": {
+                "title": "Commit failure",
+                "description": "Simulate DB error.",
+                "status": "To Do",
+                "event_id": 1
+              },
+              "db": "Simulate commit failure (e.g., DB connection lost)"
+            },
+            "when": "TaskRepository.create(task) is called",
+            "then": {
+              "error": "SQLAlchemyError or custom DB error"
+            }
+          },
+          "implementation_id": "backend_repo_create_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_repo_get_task",
+      "test_cases": [
+        {
+          "id": "get_by_id_existing_task",
+          "name": "test_get_by_id_returns_task_when_exists",
+          "description": "Should return the Task object when a task with the given ID exists in the database.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A Task with id=1 exists in the database.",
+            "when": "TaskRepository.get_by_id(1) is called.",
+            "then": "Returns the Task object with id=1."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_nonexistent_task",
+          "name": "test_get_by_id_returns_none_when_not_exists",
+          "description": "Should return None when no task with the given ID exists in the database.",
+          "type": "negative",
+          "test_setup": {
+            "given": "No Task with id=999 exists in the database.",
+            "when": "TaskRepository.get_by_id(999) is called.",
+            "then": "Returns None."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_null_id",
+          "name": "test_get_by_id_with_null_id",
+          "description": "Should handle None as task_id gracefully and return None.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains several tasks. task_id=None.",
+            "when": "TaskRepository.get_by_id(None) is called.",
+            "then": "Returns None."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_negative_id",
+          "name": "test_get_by_id_with_negative_id",
+          "description": "Should return None when a negative task_id is provided.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains tasks with positive IDs only. task_id=-1.",
+            "when": "TaskRepository.get_by_id(-1) is called.",
+            "then": "Returns None."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_zero_id",
+          "name": "test_get_by_id_with_zero_id",
+          "description": "Should return None when task_id is zero, assuming IDs start from 1.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Database contains tasks with IDs starting from 1. task_id=0.",
+            "when": "TaskRepository.get_by_id(0) is called.",
+            "then": "Returns None."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_boundary_id",
+          "name": "test_get_by_id_with_boundary_id",
+          "description": "Should return the Task object when task_id is the highest existing ID.",
+          "type": "edge",
+          "test_setup": {
+            "given": "Tasks exist with IDs 1 to 100. task_id=100.",
+            "when": "TaskRepository.get_by_id(100) is called.",
+            "then": "Returns the Task object with id=100."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_invalid_type",
+          "name": "test_get_by_id_with_invalid_type",
+          "description": "Should handle invalid type for task_id (e.g., string) gracefully, possibly raising an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": "Database contains tasks. task_id='abc' (string).",
+            "when": "TaskRepository.get_by_id('abc') is called.",
+            "then": "Raises a TypeError or returns None, depending on ORM behavior."
+          },
+          "implementation_id": "backend_repo_get_task"
+        },
+        {
+          "id": "get_by_id_deleted_task",
+          "name": "test_get_by_id_deleted_task",
+          "description": "Should return None when the task with the given ID was deleted.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A Task with id=5 existed but was deleted.",
+            "when": "TaskRepository.get_by_id(5) is called.",
+            "then": "Returns None."
+          },
+          "implementation_id": "backend_repo_get_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_repo_update_task",
+      "test_cases": [
+        {
+          "id": "update_valid_task",
+          "name": "Update a valid task",
+          "description": "Verify that updating a valid task commits changes and returns the updated task.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A Task object with valid id, title, description, and status exists in the database. The Task object has been modified (e.g., title changed).",
+            "when": "TaskRepository.update(modified_task) is called.",
+            "then": "The database reflects the updated fields, and the returned Task object matches the updated values."
+          },
+          "implementation_id": "backend_repo_update_task"
+        },
+        {
+          "id": "update_nonexistent_task",
+          "name": "Update a nonexistent task",
+          "description": "Attempt to update a Task object that does not exist in the database.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A Task object with an id that does not exist in the database.",
+            "when": "TaskRepository.update(task) is called.",
+            "then": "The database does not change, and the returned Task object is not present in the database after refresh."
+          },
+          "implementation_id": "backend_repo_update_task"
+        },
+        {
+          "id": "update_task_null_fields",
+          "name": "Update a task with null fields",
+          "description": "Attempt to update a Task object with null or missing required fields.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A Task object with null title, description, or status fields.",
+            "when": "TaskRepository.update(task) is called.",
+            "then": "The database may raise an integrity error, or the returned Task object has null fields if allowed by schema."
+          },
+          "implementation_id": "backend_repo_update_task"
+        },
+        {
+          "id": "update_task_boundary_title_length",
+          "name": "Update a task with maximum title length",
+          "description": "Update a Task object where the title is at the maximum allowed length.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A Task object with title set to \"T.repeat(255)\" (assuming 255 is the max length).",
+            "when": "TaskRepository.update(task) is called.",
+            "then": "The database successfully updates the task, and the returned Task object has the long title."
+          },
+          "implementation_id": "backend_repo_update_task"
+        },
+        {
+          "id": "update_task_invalid_status",
+          "name": "Update a task with invalid status value",
+          "description": "Attempt to update a Task object with a status value not in the allowed set (e.g., 'Archived').",
+          "type": "negative",
+          "test_setup": {
+            "given": "A Task object with status set to 'Archived' (not in ['To Do', 'In Progress', 'Completed']).",
+            "when": "TaskRepository.update(task) is called.",
+            "then": "The database may raise a validation error, or the returned Task object has the invalid status if not validated."
+          },
+          "implementation_id": "backend_repo_update_task"
+        },
+        {
+          "id": "update_task_no_changes",
+          "name": "Update a task with no changes",
+          "description": "Call update on a Task object that has not been modified.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A Task object that is identical to its database record.",
+            "when": "TaskRepository.update(task) is called.",
+            "then": "The database remains unchanged, and the returned Task object matches the original."
+          },
+          "implementation_id": "backend_repo_update_task"
+        },
+        {
+          "id": "update_task_db_failure",
+          "name": "Database failure during update",
+          "description": "Simulate a database failure (e.g., connection lost) during update.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A valid Task object and a database session that will fail on commit.",
+            "when": "TaskRepository.update(task) is called.",
+            "then": "An exception is raised, and the task is not updated."
+          },
+          "implementation_id": "backend_repo_update_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_repo_delete_task",
+      "test_cases": [
+        {
+          "id": "delete_existing_task",
+          "name": "Delete an existing task",
+          "description": "Verify that deleting an existing task removes it from the database and commits the transaction.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A valid task exists in the database with id=1.",
+            "when": "TaskRepository.delete(task_id=1) is called.",
+            "then": "The task is removed from the database and the transaction is committed successfully."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_nonexistent_task",
+          "name": "Delete a non-existent task",
+          "description": "Verify that attempting to delete a task that does not exist results in an appropriate error or no operation.",
+          "type": "negative",
+          "test_setup": {
+            "given": "No task exists in the database with id=999.",
+            "when": "TaskRepository.delete(task_id=999) is called.",
+            "then": "An error is raised (e.g., TaskNotFound), or the operation is a no-op and the transaction is committed without changes."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_task_empty_description",
+          "name": "Delete a task with empty description",
+          "description": "Verify that a task with an empty description can be deleted successfully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A task exists in the database with id=2 and description=''.",
+            "when": "TaskRepository.delete(task_id=2) is called.",
+            "then": "The task is removed from the database and the transaction is committed successfully."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_task_long_title",
+          "name": "Delete a task with maximum title length",
+          "description": "Verify that a task with a very long title (boundary condition) can be deleted successfully.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A task exists in the database with id=3 and title='T.repeat(255)'.",
+            "when": "TaskRepository.delete(task_id=3) is called.",
+            "then": "The task is removed from the database and the transaction is committed successfully."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_task_db_commit_failure",
+          "name": "Database commit failure during delete",
+          "description": "Verify that if the database commit fails during deletion, the operation is rolled back and an error is raised.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A valid task exists in the database with id=4. The database session is configured to fail on commit.",
+            "when": "TaskRepository.delete(task_id=4) is called.",
+            "then": "The transaction is rolled back and a commit error (e.g., DatabaseCommitError) is raised."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_task_invalid_id_type",
+          "name": "Delete with invalid task ID type",
+          "description": "Verify that passing an invalid type (e.g., string instead of integer) as task_id raises a validation error.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A task_id='invalid_id' (string) is provided.",
+            "when": "TaskRepository.delete(task_id='invalid_id') is called.",
+            "then": "A validation error (e.g., TypeError or ValueError) is raised and no transaction is committed."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_task_null_id",
+          "name": "Delete with null task ID",
+          "description": "Verify that passing a null value as task_id raises an error and does not perform any operation.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A task_id=null is provided.",
+            "when": "TaskRepository.delete(task_id=null) is called.",
+            "then": "A validation error (e.g., ValueError) is raised and no transaction is committed."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        },
+        {
+          "id": "delete_task_session_closed",
+          "name": "Delete with closed database session",
+          "description": "Verify that attempting to delete a task when the database session is closed raises an error.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A valid task exists in the database with id=5. The database session is closed.",
+            "when": "TaskRepository.delete(task_id=5) is called.",
+            "then": "A session error (e.g., SessionClosedError) is raised and no transaction is committed."
+          },
+          "implementation_id": "backend_repo_delete_task"
+        }
+      ]
+    },
+    {
+      "implementation_id": "service_get_all_tasks",
+      "test_cases": [
+        {
+          "id": "get_all_tasks_no_event_positive",
+          "name": "fetch_all_tasks_without_event_id",
+          "description": "Fetches all tasks when no event_id is provided, expecting all tasks in the system.",
+          "type": "positive",
+          "test_setup": {
+            "given": "No event_id is provided. The database contains multiple tasks assigned to different events and some with no event.",
+            "when": "TaskService.get_all_tasks() is called without event_id.",
+            "then": "Returns a list of TaskResponse objects representing all tasks, regardless of event assignment."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_with_event_positive",
+          "name": "fetch_tasks_for_specific_event",
+          "description": "Fetches all tasks for a specific event when event_id is provided.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A valid event_id is provided. The database contains tasks assigned to this event and other events.",
+            "when": "TaskService.get_all_tasks(event_id) is called.",
+            "then": "Returns a list of TaskResponse objects for tasks assigned to the specified event only."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_with_event_no_tasks_edge",
+          "name": "fetch_tasks_for_event_with_no_tasks",
+          "description": "Fetches tasks for an event that exists but has no tasks assigned.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A valid event_id is provided. The event exists but has no tasks assigned.",
+            "when": "TaskService.get_all_tasks(event_id) is called.",
+            "then": "Returns an empty list."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_with_invalid_event_negative",
+          "name": "fetch_tasks_for_invalid_event_id",
+          "description": "Attempts to fetch tasks for an event_id that does not exist.",
+          "type": "negative",
+          "test_setup": {
+            "given": "An invalid event_id is provided (event does not exist in the database).",
+            "when": "TaskService.get_all_tasks(event_id) is called.",
+            "then": "Returns an empty list or raises an appropriate error indicating the event does not exist."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_empty_db_edge",
+          "name": "fetch_tasks_when_no_tasks_exist",
+          "description": "Fetches all tasks when the database is empty.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No tasks exist in the database.",
+            "when": "TaskService.get_all_tasks() is called.",
+            "then": "Returns an empty list."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_with_event_null_negative",
+          "name": "fetch_tasks_with_null_event_id",
+          "description": "Attempts to fetch tasks with event_id explicitly set to null.",
+          "type": "negative",
+          "test_setup": {
+            "given": "event_id is explicitly set to null.",
+            "when": "TaskService.get_all_tasks(event_id=null) is called.",
+            "then": "Returns all tasks (same as no event_id) or raises a validation error, depending on implementation."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_with_event_type_error_negative",
+          "name": "fetch_tasks_with_non_integer_event_id",
+          "description": "Attempts to fetch tasks with an event_id of incorrect type (e.g., string, list).",
+          "type": "negative",
+          "test_setup": {
+            "given": "event_id is provided as a string or list instead of an integer.",
+            "when": "TaskService.get_all_tasks(event_id='abc') or TaskService.get_all_tasks(event_id=[1,2]) is called.",
+            "then": "Raises a type validation error or returns an appropriate error response."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_large_event_id_edge",
+          "name": "fetch_tasks_with_large_event_id",
+          "description": "Attempts to fetch tasks with a very large event_id value.",
+          "type": "edge",
+          "test_setup": {
+            "given": "event_id is set to a very large integer value (e.g., 2^31-1).",
+            "when": "TaskService.get_all_tasks(event_id=2147483647) is called.",
+            "then": "Returns an empty list or raises an error if event_id is out of bounds."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_with_event_removed_tasks_edge",
+          "name": "fetch_tasks_for_event_after_task_removal",
+          "description": "Fetches tasks for an event after some tasks have been removed from it.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An event_id is provided. Some tasks previously assigned to this event have been removed.",
+            "when": "TaskService.get_all_tasks(event_id) is called.",
+            "then": "Returns a list of TaskResponse objects for remaining tasks assigned to the event."
+          },
+          "implementation_id": "service_get_all_tasks"
+        },
+        {
+          "id": "get_all_tasks_reassigned_tasks_edge",
+          "name": "fetch_tasks_for_event_after_task_reassignment",
+          "description": "Fetches tasks for an event after some tasks have been reassigned to a different event.",
+          "type": "edge",
+          "test_setup": {
+            "given": "An event_id is provided. Some tasks previously assigned to this event have been reassigned to another event.",
+            "when": "TaskService.get_all_tasks(event_id) is called.",
+            "then": "Returns a list of TaskResponse objects for tasks currently assigned to the event, excluding reassigned tasks."
+          },
+          "implementation_id": "service_get_all_tasks"
+        }
+      ]
+    },
+    {
+      "implementation_id": "service_delete_task",
+      "test_cases": [
+        {
+          "id": "delete_task_valid_id",
+          "name": "Delete task with valid ID",
+          "description": "Verify that a task is successfully deleted when a valid task_id is provided and the task exists.",
+          "type": "positive",
+          "test_setup": {
+            "given": "A task with id=1 exists and is assigned to an event.",
+            "when": "TaskService.delete_task(task_id=1) is called.",
+            "then": "The task is removed from the event and no longer exists in the repository."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_nonexistent_id",
+          "name": "Delete task with nonexistent ID",
+          "description": "Verify that an error is raised when attempting to delete a task with a task_id that does not exist.",
+          "type": "negative",
+          "test_setup": {
+            "given": "No task exists with id=999.",
+            "when": "TaskService.delete_task(task_id=999) is called.",
+            "then": "An error (e.g., TaskNotFoundError) is raised indicating the task does not exist."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_null_id",
+          "name": "Delete task with null ID",
+          "description": "Verify that an error is raised when attempting to delete a task with a null task_id.",
+          "type": "edge",
+          "test_setup": {
+            "given": "No task_id is provided (task_id=null).",
+            "when": "TaskService.delete_task(task_id=null) is called.",
+            "then": "An error (e.g., ValueError or TypeError) is raised due to invalid input."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_string_id",
+          "name": "Delete task with string ID",
+          "description": "Verify that an error is raised when attempting to delete a task with a non-integer task_id.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A string is provided as task_id (task_id='abc').",
+            "when": "TaskService.delete_task(task_id='abc') is called.",
+            "then": "An error (e.g., TypeError) is raised due to invalid input type."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_already_deleted",
+          "name": "Delete task that was already deleted",
+          "description": "Verify that an error is raised when attempting to delete a task that has already been deleted.",
+          "type": "negative",
+          "test_setup": {
+            "given": "A task with id=2 existed but was previously deleted.",
+            "when": "TaskService.delete_task(task_id=2) is called.",
+            "then": "An error (e.g., TaskNotFoundError) is raised indicating the task does not exist."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_unassigned_event",
+          "name": "Delete task not assigned to any event",
+          "description": "Verify that a task not assigned to any event can still be deleted.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A task with id=3 exists but is not assigned to any event.",
+            "when": "TaskService.delete_task(task_id=3) is called.",
+            "then": "The task is deleted from the repository without error."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_multiple_events",
+          "name": "Delete task assigned to multiple events (if supported)",
+          "description": "Verify that deleting a task assigned to multiple events removes it from all associated events.",
+          "type": "edge",
+          "test_setup": {
+            "given": "A task with id=4 is assigned to multiple events (if supported by the model).",
+            "when": "TaskService.delete_task(task_id=4) is called.",
+            "then": "The task is removed from all events and deleted from the repository."
+          },
+          "implementation_id": "service_delete_task"
+        },
+        {
+          "id": "delete_task_repository_failure",
+          "name": "Delete task with repository failure",
+          "description": "Verify that an appropriate error is raised if the repository fails to delete the task (e.g., database error).",
+          "type": "negative",
+          "test_setup": {
+            "given": "A task with id=5 exists, but the repository's delete method raises an exception (e.g., DB connection lost).",
+            "when": "TaskService.delete_task(task_id=5) is called.",
+            "then": "An error (e.g., RepositoryError) is raised and the task remains unchanged."
+          },
+          "implementation_id": "service_delete_task"
+        }
+      ]
+    }
+  ],
+  "component": [
+    {
+      "implementation_id": "frontend_event_list_component",
+      "test_cases": [
+        {
+          "id": "render_event_list_with_events",
+          "name": "Render event list with events",
+          "description": "Verify that the component correctly renders a list of events with all details and action buttons.",
+          "type": "positive",
+          "test_setup": {
+            "given": "props.events contains multiple event objects with name, description, startDate, endDate",
+            "when": "Component is rendered",
+            "then": "Each event is displayed with its details, and Edit/Delete buttons are visible for each event"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "render_event_list_empty",
+          "name": "Render event list with no events",
+          "description": "Verify that the component displays an appropriate message or empty state when there are no events.",
+          "type": "edge",
+          "test_setup": {
+            "given": "props.events is an empty array",
+            "when": "Component is rendered",
+            "then": "A message like 'No events found' or an empty state is displayed, and no event cards are rendered"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "create_event_button_visible",
+          "name": "Create event button is visible",
+          "description": "Ensure the 'Create Event' button is always visible to allow users to add new events.",
+          "type": "positive",
+          "test_setup": {
+            "given": "Any initial state",
+            "when": "Component is rendered",
+            "then": "'Create Event' button is present in the UI"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "create_event_success",
+          "name": "Create event successfully",
+          "description": "Test that creating a new event via the UI calls the handler and updates the list.",
+          "type": "positive",
+          "test_setup": {
+            "given": "props.onCreateEvent is a mock function, events list is initially empty",
+            "when": "User clicks 'Create Event', fills valid details, and submits",
+            "then": "onCreateEvent is called with correct data, and new event appears in the list"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "create_event_missing_fields",
+          "name": "Create event with missing required fields",
+          "description": "Test validation when user tries to create an event without required fields.",
+          "type": "negative",
+          "test_setup": {
+            "given": "User opens create event form",
+            "when": "User submits form with missing name or dates",
+            "then": "Validation error messages are shown, onCreateEvent is not called"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "edit_event_success",
+          "name": "Edit event successfully",
+          "description": "Test that editing an event updates its details and calls the handler.",
+          "type": "positive",
+          "test_setup": {
+            "given": "props.events contains an event, props.onEditEvent is a mock function",
+            "when": "User clicks Edit, changes details, and submits",
+            "then": "onEditEvent is called with updated data, and event details are updated in the list"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "edit_event_invalid_dates",
+          "name": "Edit event with invalid date range",
+          "description": "Test validation when user sets end date before start date.",
+          "type": "negative",
+          "test_setup": {
+            "given": "User opens edit form for an event",
+            "when": "User sets endDate earlier than startDate and submits",
+            "then": "Validation error is shown, onEditEvent is not called"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "delete_event_success",
+          "name": "Delete event successfully",
+          "description": "Test that deleting an event removes it from the list and calls the handler.",
+          "type": "positive",
+          "test_setup": {
+            "given": "props.events contains an event, props.onDeleteEvent is a mock function",
+            "when": "User clicks Delete on an event and confirms",
+            "then": "onDeleteEvent is called with event id, and event is removed from the list"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "delete_event_cancel",
+          "name": "Cancel event deletion",
+          "description": "Test that cancelling the delete action does not remove the event or call the handler.",
+          "type": "edge",
+          "test_setup": {
+            "given": "props.events contains an event",
+            "when": "User clicks Delete but cancels the confirmation dialog",
+            "then": "Event remains in the list, onDeleteEvent is not called"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "api_error_on_create",
+          "name": "API error on event creation",
+          "description": "Test error handling when backend returns an error during event creation.",
+          "type": "negative",
+          "test_setup": {
+            "given": "props.onCreateEvent simulates API error response",
+            "when": "User submits valid event details",
+            "then": "Error message is displayed, event is not added to the list"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "api_error_on_edit",
+          "name": "API error on event edit",
+          "description": "Test error handling when backend returns an error during event editing.",
+          "type": "negative",
+          "test_setup": {
+            "given": "props.onEditEvent simulates API error response",
+            "when": "User submits valid edit details",
+            "then": "Error message is displayed, event details are not updated"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "api_error_on_delete",
+          "name": "API error on event deletion",
+          "description": "Test error handling when backend returns an error during event deletion.",
+          "type": "negative",
+          "test_setup": {
+            "given": "props.onDeleteEvent simulates API error response",
+            "when": "User confirms event deletion",
+            "then": "Error message is displayed, event remains in the list"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "long_event_name_and_description",
+          "name": "Event with long name and description",
+          "description": "Test rendering and handling of events with very long names and descriptions.",
+          "type": "edge",
+          "test_setup": {
+            "given": "props.events contains an event with name and description of length 255+ characters",
+            "when": "Component is rendered",
+            "then": "Event details are displayed correctly, UI does not break"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "special_characters_in_event_fields",
+          "name": "Event fields with special characters",
+          "description": "Test rendering and form handling for events with special characters in name/description.",
+          "type": "edge",
+          "test_setup": {
+            "given": "props.events contains an event with special characters in name/description",
+            "when": "Component is rendered",
+            "then": "Special characters are displayed correctly, no XSS or rendering issues"
+          },
+          "implementation_id": "frontend_event_list_component"
+        },
+        {
+          "id": "rapid_create_edit_delete",
+          "name": "Rapid create, edit, and delete actions",
+          "description": "Test component stability when user rapidly creates, edits, and deletes events.",
+          "type": "edge",
+          "test_setup": {
+            "given": "props.events is initially empty, handlers are mocked",
+            "when": "User quickly creates, edits, and deletes events in succession",
+            "then": "Component remains stable, no crashes or inconsistent state"
+          },
+          "implementation_id": "frontend_event_list_component"
+        }
+      ]
+    },
+    {
+      "implementation_id": "frontend_event_card_component",
+      "test_cases": [
+        {
+          "id": "renders_event_details",
+          "name": "Render event details correctly",
+          "description": "Checks that the event name, description, start date, end date, and task count are rendered as expected.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventCard receives valid event props with all fields populated and tasks array present",
+            "when": "Component is rendered",
+            "then": "Event name, description, formatted start/end dates, and correct task count are displayed"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "edit_button_triggers_handler",
+          "name": "Edit button calls onEdit handler",
+          "description": "Verifies that clicking the Edit button calls the onEdit handler function.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventCard receives a mock onEdit handler",
+            "when": "User clicks the Edit button",
+            "then": "onEdit handler is called once"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "delete_button_triggers_handler",
+          "name": "Delete button calls onDelete handler",
+          "description": "Verifies that clicking the Delete button calls the onDelete handler function.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventCard receives a mock onDelete handler",
+            "when": "User clicks the Delete button",
+            "then": "onDelete handler is called once"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "renders_without_description",
+          "name": "Render without description",
+          "description": "Checks that the component renders correctly when the event description is missing.",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventCard receives event props with description as an empty string or undefined",
+            "when": "Component is rendered",
+            "then": "Description element is not rendered"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "renders_with_no_tasks",
+          "name": "Render with no tasks",
+          "description": "Checks that the task count displays as 0 when the event has no tasks array.",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventCard receives event props with tasks as undefined",
+            "when": "Component is rendered",
+            "then": "Task count displays as 0"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "invalid_date_format",
+          "name": "Handle invalid date format",
+          "description": "Checks that the component handles invalid date strings gracefully.",
+          "type": "negative",
+          "test_setup": {
+            "given": "EventCard receives event props with invalid start_date and end_date strings",
+            "when": "Component is rendered",
+            "then": "Date fields display 'Invalid Date' or fallback value"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "edit_button_disabled_state",
+          "name": "Edit button disabled state (edge case)",
+          "description": "Checks that the Edit button is enabled by default and can be disabled if required by future props.",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventCard receives event props and onEdit handler, but Edit button is set to disabled (if supported in future)",
+            "when": "User attempts to click Edit button",
+            "then": "onEdit handler is not called"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "delete_button_disabled_state",
+          "name": "Delete button disabled state (edge case)",
+          "description": "Checks that the Delete button is enabled by default and can be disabled if required by future props.",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventCard receives event props and onDelete handler, but Delete button is set to disabled (if supported in future)",
+            "when": "User attempts to click Delete button",
+            "then": "onDelete handler is not called"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "missing_event_props",
+          "name": "Missing event props",
+          "description": "Checks that the component throws an error or handles missing event prop gracefully.",
+          "type": "negative",
+          "test_setup": {
+            "given": "EventCard is rendered without the event prop",
+            "when": "Component is rendered",
+            "then": "Component throws error or displays fallback UI"
+          },
+          "implementation_id": "frontend_event_card_component"
+        },
+        {
+          "id": "large_text_fields",
+          "name": "Render with large text fields",
+          "description": "Checks that the component can render very long event names and descriptions without breaking layout.",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventCard receives event props with name and description as very long strings",
+            "when": "Component is rendered",
+            "then": "Text is displayed correctly, layout is not broken"
+          },
+          "implementation_id": "frontend_event_card_component"
+        }
+      ]
+    },
+    {
+      "implementation_id": "frontend_event_form_component",
+      "test_cases": [
+        {
+          "id": "create_event_success",
+          "name": "Create Event - Success",
+          "description": "User fills all required fields and submits the form to create a new event. API call succeeds and parent is notified.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventForm rendered with no event prop (create mode)",
+            "when": "User enters valid name, description, start date, end date and submits form",
+            "then": "createEvent API is called with correct data, loading state is shown, onSuccess is called, modal closes"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "edit_event_success",
+          "name": "Edit Event - Success",
+          "description": "User edits an existing event and submits the form. API call succeeds and parent is notified.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventForm rendered with event prop (edit mode)",
+            "when": "User modifies fields and submits form",
+            "then": "updateEvent API is called with correct data, loading state is shown, onSuccess is called, modal closes"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "required_fields_validation",
+          "name": "Required Fields Validation",
+          "description": "Form should not submit if required fields (name, start date, end date) are empty.",
+          "type": "negative",
+          "test_setup": {
+            "given": "EventForm rendered in create mode",
+            "when": "User leaves name, start date, or end date empty and tries to submit",
+            "then": "Form does not submit, validation prevents API call, error shown if possible"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "cancel_button_closes_modal",
+          "name": "Cancel Button Closes Modal",
+          "description": "Clicking the Cancel button should close the modal and not submit the form.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventForm rendered",
+            "when": "User clicks Cancel button",
+            "then": "onClose is called, modal closes, no API call is made"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "api_error_handling",
+          "name": "API Error Handling",
+          "description": "If the API call fails, an error message is shown and loading state is reset.",
+          "type": "negative",
+          "test_setup": {
+            "given": "EventForm rendered, API will fail",
+            "when": "User submits valid form and API returns error",
+            "then": "Error message is shown (alert), loading state is false, onSuccess is not called"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "loading_state_on_submit",
+          "name": "Loading State on Submit",
+          "description": "Submit button is disabled and shows loading indicator while API call is in progress.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventForm rendered, user fills valid data",
+            "when": "User submits form",
+            "then": "Submit button is disabled, shows 'Saving...', prevents double submit"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "description_optional",
+          "name": "Description Field Optional",
+          "description": "User can submit the form without entering a description.",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventForm rendered in create mode",
+            "when": "User leaves description empty and submits valid name, start date, end date",
+            "then": "Form submits successfully, description is null in API payload"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "date_format_validation",
+          "name": "Date Format Validation",
+          "description": "Start and end dates must be valid datetime-local values; invalid formats should prevent submission.",
+          "type": "negative",
+          "test_setup": {
+            "given": "EventForm rendered",
+            "when": "User enters invalid date format in start or end date and submits",
+            "then": "Form does not submit, validation prevents API call"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "modal_click_outside_closes",
+          "name": "Modal Click Outside Closes",
+          "description": "Clicking outside the modal content should close the modal.",
+          "type": "positive",
+          "test_setup": {
+            "given": "EventForm modal is open",
+            "when": "User clicks outside modal content area",
+            "then": "onClose is called, modal closes"
+          },
+          "implementation_id": "frontend_event_form_component"
+        },
+        {
+          "id": "end_date_before_start_date",
+          "name": "End Date Before Start Date",
+          "description": "Submitting the form with end date before start date should be handled (edge case).",
+          "type": "edge",
+          "test_setup": {
+            "given": "EventForm rendered",
+            "when": "User enters end date earlier than start date and submits",
+            "then": "Form submits (no explicit validation in code), API receives data; edge case for backend validation"
+          },
+          "implementation_id": "frontend_event_form_component"
+        }
+      ]
+    },
+    {
+      "implementation_id": "frontend_tasklist_component",
+      "test_cases": [
+        {
+          "id": "render_empty_task_list",
+          "name": "Render empty task list",
+          "description": "Should display an empty state message when there are no tasks.",
+          "type": "positive",
+          "test_setup": {
+            "given": "tasks: [], events: [], all handlers as jest.fn()",
+            "when": "Component is rendered",
+            "then": "The message 'No tasks yet. Create your first task to get started!' is visible"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "render_task_list_with_tasks",
+          "name": "Render task list with tasks",
+          "description": "Should render TaskCard for each task in the list.",
+          "type": "positive",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 2}, {id: 2, title: 'Task 2', event_id: 3}], events: [{id: 2, name: 'Event A'}, {id: 3, name: 'Event B'}], all handlers as jest.fn()",
+            "when": "Component is rendered",
+            "then": "Two TaskCard components are rendered with correct titles and event names"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "create_new_task_button_click",
+          "name": "Create new task button click",
+          "description": "Should call onCreateNew handler when the create button is clicked.",
+          "type": "positive",
+          "test_setup": {
+            "given": "tasks: [], events: [], onCreateNew: jest.fn()",
+            "when": "User clicks '+ Create New Task' button",
+            "then": "onCreateNew is called once"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "edit_task_button_click",
+          "name": "Edit task button click",
+          "description": "Should call onEdit handler with correct task when edit is triggered.",
+          "type": "positive",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 2}], events: [{id: 2, name: 'Event A'}], onEdit: jest.fn()",
+            "when": "User clicks edit on TaskCard for Task 1",
+            "then": "onEdit is called with Task 1"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "delete_task_confirmed",
+          "name": "Delete task confirmed",
+          "description": "Should call deleteTask API and onDelete handler when user confirms deletion.",
+          "type": "positive",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 2}], events: [{id: 2, name: 'Event A'}], onDelete: jest.fn(), deleteTask mocked to resolve",
+            "when": "User clicks delete on TaskCard and confirms",
+            "then": "deleteTask is called with id 1 and onDelete is called"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "delete_task_cancelled",
+          "name": "Delete task cancelled",
+          "description": "Should not call deleteTask API or onDelete handler when user cancels deletion.",
+          "type": "negative",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 2}], events: [{id: 2, name: 'Event A'}], onDelete: jest.fn(), deleteTask mocked",
+            "when": "User clicks delete on TaskCard and cancels confirmation",
+            "then": "deleteTask and onDelete are not called"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "delete_task_api_failure",
+          "name": "Delete task API failure",
+          "description": "Should show error alert when deleteTask API call fails.",
+          "type": "edge",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 2}], events: [{id: 2, name: 'Event A'}], onDelete: jest.fn(), deleteTask mocked to reject",
+            "when": "User clicks delete on TaskCard and confirms",
+            "then": "Alert 'Failed to delete task' is shown and onDelete is not called"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "event_name_fallback",
+          "name": "Event name fallback",
+          "description": "Should display 'Unknown Event' if event_id does not match any event.",
+          "type": "edge",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 999}], events: [{id: 2, name: 'Event A'}]",
+            "when": "Component is rendered",
+            "then": "TaskCard for Task 1 displays eventName as 'Unknown Event'"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "task_list_rerender_on_props_change",
+          "name": "Task list rerender on props change",
+          "description": "Should update rendered TaskCards when tasks prop changes.",
+          "type": "positive",
+          "test_setup": {
+            "given": "tasks: [{id: 1, title: 'Task 1', event_id: 2}], events: [{id: 2, name: 'Event A'}]",
+            "when": "tasks prop is updated to [{id: 2, title: 'Task 2', event_id: 2}]",
+            "then": "TaskCard for Task 1 is removed and TaskCard for Task 2 is rendered"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        },
+        {
+          "id": "task_list_with_large_number_of_tasks",
+          "name": "Task list with large number of tasks",
+          "description": "Should render all TaskCards correctly when given a large list of tasks.",
+          "type": "edge",
+          "test_setup": {
+            "given": "tasks: Array of 100 tasks with unique ids and event_ids, events: Array of corresponding events",
+            "when": "Component is rendered",
+            "then": "100 TaskCard components are rendered"
+          },
+          "implementation_id": "frontend_tasklist_component"
+        }
+      ]
+    },
+    {
+      "implementation_id": "frontend_taskcard_component",
+      "test_cases": [
+        {
+          "id": "renders_task_details_positive",
+          "name": "Render Task Details",
+          "description": "Should render the task title, description, status, and event name correctly.",
+          "type": "positive",
+          "test_setup": {
+            "given": "{ task: { title: 'Test Task', description: 'Test Description', status: 'To Do' }, eventName: 'Event A', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Task title, description, status badge, and event name are visible in the DOM"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "edit_button_triggers_onEdit_positive",
+          "name": "Edit Button Triggers onEdit",
+          "description": "Should call onEdit handler when Edit button is clicked.",
+          "type": "positive",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'In Progress' }, eventName: 'Event B', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "User clicks the Edit button",
+            "then": "onEdit handler is called once"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "delete_button_triggers_onDelete_positive",
+          "name": "Delete Button Triggers onDelete",
+          "description": "Should call onDelete handler when Delete button is clicked.",
+          "type": "positive",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'Completed' }, eventName: 'Event C', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "User clicks the Delete button",
+            "then": "onDelete handler is called once"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "renders_without_description_edge",
+          "name": "Render Without Description",
+          "description": "Should not render description paragraph if task.description is empty or undefined.",
+          "type": "edge",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: '', status: 'To Do' }, eventName: 'Event D', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Description paragraph is not present in the DOM"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "status_badge_class_todo_positive",
+          "name": "Status Badge Class - To Do",
+          "description": "Should apply correct CSS class for 'To Do' status.",
+          "type": "positive",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'To Do' }, eventName: 'Event E', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Status badge has class 'status-todo'"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "status_badge_class_in_progress_positive",
+          "name": "Status Badge Class - In Progress",
+          "description": "Should apply correct CSS class for 'In Progress' status.",
+          "type": "positive",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'In Progress' }, eventName: 'Event F', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Status badge has class 'status-in-progress'"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "status_badge_class_completed_positive",
+          "name": "Status Badge Class - Completed",
+          "description": "Should apply correct CSS class for 'Completed' status.",
+          "type": "positive",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'Completed' }, eventName: 'Event G', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Status badge has class 'status-completed'"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "status_badge_class_unknown_edge",
+          "name": "Status Badge Class - Unknown Status",
+          "description": "Should default to 'status-todo' class for unknown status values.",
+          "type": "edge",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'Unknown' }, eventName: 'Event H', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Status badge has class 'status-todo'"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "missing_title_negative",
+          "name": "Missing Title",
+          "description": "Should handle missing task title gracefully (e.g., render empty or fallback).",
+          "type": "negative",
+          "test_setup": {
+            "given": "{ task: { title: '', description: 'Desc', status: 'To Do' }, eventName: 'Event I', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Title area is empty or shows fallback text"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "long_title_and_description_edge",
+          "name": "Long Title and Description",
+          "description": "Should render very long title and description without breaking layout.",
+          "type": "edge",
+          "test_setup": {
+            "given": "{ task: { title: \"T.repeat(255)\", description: \"D.repeat(1024)\", status: 'To Do' }, eventName: 'Event J', onEdit: jest.fn(), onDelete: jest.fn() }",
+            "when": "Component is rendered",
+            "then": "Long title and description are visible and layout is not broken"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        },
+        {
+          "id": "edit_and_delete_buttons_disabled_negative",
+          "name": "Edit and Delete Buttons Disabled",
+          "description": "Should handle case where onEdit or onDelete are undefined (buttons do not throw error).",
+          "type": "negative",
+          "test_setup": {
+            "given": "{ task: { title: 'Task', description: 'Desc', status: 'To Do' }, eventName: 'Event K', onEdit: undefined, onDelete: undefined }",
+            "when": "User clicks Edit or Delete button",
+            "then": "No error is thrown; buttons may be disabled or do nothing"
+          },
+          "implementation_id": "frontend_taskcard_component"
+        }
+      ]
+    },
+    {
+      "implementation_id": "frontend_taskform_component",
+      "test_cases": [
+        {
+          "id": "render_create_form_default",
+          "name": "Render Create Task Form with Default Values",
+          "description": "Verify that the form renders correctly in create mode with default values for all fields.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "Component is rendered",
+            "then": "Title is empty, description is empty, status is 'To Do', event is first event, submit button shows 'Create'"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "render_edit_form_prefilled",
+          "name": "Render Edit Task Form with Prefilled Values",
+          "description": "Verify that the form renders correctly in edit mode with the task's values prefilled.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: {id: 2, title: 'Test', description: 'Desc', status: 'Completed', event_id: 1}, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "Component is rendered",
+            "then": "Title is 'Test', description is 'Desc', status is 'Completed', event is event with id 1, submit button shows 'Update'"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "submit_create_success",
+          "name": "Submit Create Task Form Successfully",
+          "description": "Test successful creation of a new task and verify onSuccess is called.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User fills all required fields and submits the form",
+            "then": "createTask API is called with correct data, onSuccess is called, loading state is handled"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "submit_edit_success",
+          "name": "Submit Edit Task Form Successfully",
+          "description": "Test successful update of an existing task and verify onSuccess is called.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: {id: 2, title: 'Test', description: 'Desc', status: 'Completed', event_id: 1}, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User edits fields and submits the form",
+            "then": "updateTask API is called with correct data, onSuccess is called, loading state is handled"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "close_form_via_button",
+          "name": "Close Form via Close Button",
+          "description": "Verify that clicking the close button calls the onClose handler.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User clicks the close button",
+            "then": "onClose is called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "close_form_via_modal_background",
+          "name": "Close Form via Modal Background Click",
+          "description": "Verify that clicking the modal background calls the onClose handler.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User clicks outside the modal content",
+            "then": "onClose is called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "cancel_button_closes_form",
+          "name": "Cancel Button Closes Form",
+          "description": "Verify that clicking the Cancel button calls the onClose handler.",
+          "type": "positive",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User clicks the Cancel button",
+            "then": "onClose is called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "required_title_validation",
+          "name": "Required Title Field Validation",
+          "description": "Test that submitting the form without a title shows a validation error and does not call API.",
+          "type": "negative",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User leaves title empty and submits the form",
+            "then": "Form does not submit, browser shows required field error, API is not called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "required_status_validation",
+          "name": "Required Status Field Validation",
+          "description": "Test that submitting the form without selecting a status shows a validation error and does not call API.",
+          "type": "negative",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User clears status and submits the form",
+            "then": "Form does not submit, browser shows required field error, API is not called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "required_event_validation",
+          "name": "Required Event Field Validation",
+          "description": "Test that submitting the form without selecting an event shows a validation error and does not call API.",
+          "type": "negative",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User clears event selection and submits the form",
+            "then": "Form does not submit, browser shows required field error, API is not called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "api_error_handling",
+          "name": "API Error Handling on Submit",
+          "description": "Test that API errors are handled gracefully and an alert is shown.",
+          "type": "negative",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn, createTask throws error",
+            "when": "User submits the form and API returns error",
+            "then": "Alert is shown with error message, loading state is reset, onSuccess is not called"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "edge_long_title",
+          "name": "Edge Case: Maximum Length Title",
+          "description": "Test submitting a task with a very long title (e.g., 255 characters).",
+          "type": "edge",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn, title: 'T.repeat(255)'",
+            "when": "User enters a 255-character title and submits the form",
+            "then": "Form submits successfully if backend allows, otherwise error is shown"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "edge_empty_description",
+          "name": "Edge Case: Empty Description",
+          "description": "Test submitting a task with an empty description field.",
+          "type": "edge",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn, description: ''",
+            "when": "User leaves description empty and submits the form",
+            "then": "Form submits successfully, description is sent as null"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "edge_no_events",
+          "name": "Edge Case: No Events Provided",
+          "description": "Test rendering the form when the events array is empty.",
+          "type": "edge",
+          "test_setup": {
+            "given": "task: null, events: [], onClose: mockFn, onSuccess: mockFn",
+            "when": "Component is rendered",
+            "then": "Event select field is empty or disabled, form cannot be submitted"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "edge_status_transitions",
+          "name": "Edge Case: Status Transitions",
+          "description": "Test changing status between all possible values and submitting.",
+          "type": "edge",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn",
+            "when": "User selects each status ('To Do', 'In Progress', 'Completed') and submits",
+            "then": "Form submits successfully with correct status value"
+          },
+          "implementation_id": "frontend_taskform_component"
+        },
+        {
+          "id": "loading_state_disables_buttons",
+          "name": "Loading State Disables Buttons",
+          "description": "Test that while loading, the submit and cancel buttons are disabled and the submit button shows 'Saving...'.",
+          "type": "edge",
+          "test_setup": {
+            "given": "task: null, events: [{id: 1, name: 'Event 1'}], onClose: mockFn, onSuccess: mockFn, loading: true",
+            "when": "Form is submitting",
+            "then": "Submit and cancel buttons are disabled, submit button text is 'Saving...'"
+          },
+          "implementation_id": "frontend_taskform_component"
+        }
+      ]
+    }
+  ],
+  "endpoint": [
+    {
+      "implementation_id": "backend_get_all_events_endpoint",
+      "test_cases": [
+        {
+          "id": "get_events_empty_list",
+          "name": "Get events when no events exist",
+          "description": "Verify that the endpoint returns an empty list when there are no events in the database.",
+          "type": "positive",
+          "request_method": "GET",
+          "request_url": "/api/events",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "events": []
+          },
+          "test_setup": {
+            "given": "No events exist in the database.",
+            "when": "A GET request is sent to /api/events.",
+            "then": "The response is 200 OK with an empty events list."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_with_multiple",
+          "name": "Get events when multiple events exist",
+          "description": "Verify that the endpoint returns all events present in the database.",
+          "type": "positive",
+          "request_method": "GET",
+          "request_url": "/api/events",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "events": [
+              {
+                "id": 1,
+                "name": "Conference",
+                "description": "Annual tech conference",
+                "start_date": "2026-01-10T09:00:00Z",
+                "end_date": "2026-01-12T17:00:00Z"
+              },
+              {
+                "id": 2,
+                "name": "Workshop",
+                "description": "Python workshop",
+                "start_date": "2026-02-01T10:00:00Z",
+                "end_date": "2026-02-01T16:00:00Z"
+              }
+            ]
+          },
+          "test_setup": {
+            "given": "Multiple events exist in the database.",
+            "when": "A GET request is sent to /api/events.",
+            "then": "The response is 200 OK with a list of all events."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_long_name",
+          "name": "Get event with maximum name length",
+          "description": "Verify that the endpoint correctly returns an event with a name at the maximum allowed length.",
+          "type": "edge",
+          "request_method": "GET",
+          "request_url": "/api/events",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "events": [
+              {
+                "id": 3,
+                "name": "T.repeat(255)",
+                "description": "Event with max name length",
+                "start_date": "2026-03-01T00:00:00Z",
+                "end_date": "2026-03-02T00:00:00Z"
+              }
+            ]
+          },
+          "test_setup": {
+            "given": "An event exists with a name at the maximum allowed length (255 characters).",
+            "when": "A GET request is sent to /api/events.",
+            "then": "The response is 200 OK and includes the event with the long name."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_empty_description",
+          "name": "Get event with empty description",
+          "description": "Verify that the endpoint returns events with empty descriptions correctly.",
+          "type": "edge",
+          "request_method": "GET",
+          "request_url": "/api/events",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "events": [
+              {
+                "id": 4,
+                "name": "No Description Event",
+                "description": "",
+                "start_date": "2026-04-01T08:00:00Z",
+                "end_date": "2026-04-01T12:00:00Z"
+              }
+            ]
+          },
+          "test_setup": {
+            "given": "An event exists with an empty description.",
+            "when": "A GET request is sent to /api/events.",
+            "then": "The response is 200 OK and includes the event with an empty description."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_invalid_method",
+          "name": "Send POST request to get_all_events endpoint",
+          "description": "Verify that the endpoint rejects unsupported HTTP methods.",
+          "type": "negative",
+          "request_method": "POST",
+          "request_url": "/api/events",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 405,
+          "response_body_json": {
+            "detail": "Method Not Allowed"
+          },
+          "test_setup": {
+            "given": "The endpoint only supports GET requests.",
+            "when": "A POST request is sent to /api/events.",
+            "then": "The response is 405 Method Not Allowed."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_missing_content_type",
+          "name": "GET request without Content-Type header",
+          "description": "Verify that the endpoint handles requests missing the Content-Type header.",
+          "type": "edge",
+          "request_method": "GET",
+          "request_url": "/api/events",
+          "request_headers": {},
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "events": []
+          },
+          "test_setup": {
+            "given": "No Content-Type header is sent.",
+            "when": "A GET request is sent to /api/events.",
+            "then": "The response is 200 OK and the endpoint functions as expected."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_invalid_url",
+          "name": "GET request to invalid endpoint URL",
+          "description": "Verify that the endpoint returns 404 for an invalid URL.",
+          "type": "negative",
+          "request_method": "GET",
+          "request_url": "/api/eventz",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 404,
+          "response_body_json": {
+            "detail": "Not Found"
+          },
+          "test_setup": {
+            "given": "The endpoint is accessed with an incorrect URL.",
+            "when": "A GET request is sent to /api/eventz.",
+            "then": "The response is 404 Not Found."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        },
+        {
+          "id": "get_events_date_boundaries",
+          "name": "Get event with boundary start and end dates",
+          "description": "Verify that the endpoint returns events with start and end dates at boundary values.",
+          "type": "edge",
+          "request_method": "GET",
+          "request_url": "/api/events",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "events": [
+              {
+                "id": 5,
+                "name": "Epoch Event",
+                "description": "Event at Unix epoch",
+                "start_date": "1970-01-01T00:00:00Z",
+                "end_date": "1970-01-01T01:00:00Z"
+              },
+              {
+                "id": 6,
+                "name": "Far Future Event",
+                "description": "Event in the far future",
+                "start_date": "2100-12-31T23:59:59Z",
+                "end_date": "2101-01-01T00:00:00Z"
+              }
+            ]
+          },
+          "test_setup": {
+            "given": "Events exist with start and end dates at boundary values.",
+            "when": "A GET request is sent to /api/events.",
+            "then": "The response is 200 OK and includes events with boundary dates."
+          },
+          "implementation_id": "backend_get_all_events_endpoint"
+        }
+      ]
+    },
+    {
+      "implementation_id": "backend_tasks_get_all_endpoint",
+      "test_cases": [
+        {
+          "id": "get_all_tasks_no_event_id_positive",
+          "name": "Fetch all tasks without event_id",
+          "description": "Verify that the endpoint returns all tasks when no event_id is provided.",
+          "type": "positive",
+          "request_method": "GET",
+          "request_url": "/api/tasks",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "tasks": [
+              {
+                "id": 1,
+                "title": "Task 1",
+                "description": "Description 1",
+                "status": "To Do",
+                "event_id": 10
+              },
+              {
+                "id": 2,
+                "title": "Task 2",
+                "description": "Description 2",
+                "status": "Completed",
+                "event_id": 11
+              }
+            ]
+          },
+          "test_setup": {
+            "given": "Multiple tasks exist in the database.",
+            "when": "GET /api/tasks is called without event_id.",
+            "then": "All tasks are returned in the response."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_with_event_id_positive",
+          "name": "Fetch tasks filtered by event_id",
+          "description": "Verify that the endpoint returns only tasks associated with the specified event_id.",
+          "type": "positive",
+          "request_method": "GET",
+          "request_url": "/api/tasks?event_id=10",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "tasks": [
+              {
+                "id": 1,
+                "title": "Task 1",
+                "description": "Description 1",
+                "status": "To Do",
+                "event_id": 10
+              }
+            ]
+          },
+          "test_setup": {
+            "given": "Tasks exist for multiple events, including event_id 10.",
+            "when": "GET /api/tasks?event_id=10 is called.",
+            "then": "Only tasks with event_id 10 are returned."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_empty_result_edge",
+          "name": "Fetch tasks when no tasks exist",
+          "description": "Verify that the endpoint returns an empty list when there are no tasks.",
+          "type": "edge",
+          "request_method": "GET",
+          "request_url": "/api/tasks",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "tasks": []
+          },
+          "test_setup": {
+            "given": "No tasks exist in the database.",
+            "when": "GET /api/tasks is called.",
+            "then": "An empty list is returned."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_invalid_event_id_negative",
+          "name": "Fetch tasks with invalid event_id",
+          "description": "Verify that the endpoint handles invalid event_id gracefully.",
+          "type": "negative",
+          "request_method": "GET",
+          "request_url": "/api/tasks?event_id=99999",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "tasks": []
+          },
+          "test_setup": {
+            "given": "No tasks exist for event_id 99999.",
+            "when": "GET /api/tasks?event_id=99999 is called.",
+            "then": "An empty list is returned."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_invalid_event_id_type_negative",
+          "name": "Fetch tasks with non-integer event_id",
+          "description": "Verify that the endpoint returns an error when event_id is not an integer.",
+          "type": "negative",
+          "request_method": "GET",
+          "request_url": "/api/tasks?event_id=abc",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 400,
+          "response_body_json": {
+            "detail": "event_id must be an integer"
+          },
+          "test_setup": {
+            "given": "The event_id query parameter is a non-integer value.",
+            "when": "GET /api/tasks?event_id=abc is called.",
+            "then": "A 400 error is returned indicating invalid event_id type."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_large_number_of_tasks_edge",
+          "name": "Fetch large number of tasks",
+          "description": "Verify that the endpoint can handle and return a large number of tasks.",
+          "type": "edge",
+          "request_method": "GET",
+          "request_url": "/api/tasks",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 200,
+          "response_body_json": {
+            "tasks": "T.repeat(1000)"
+          },
+          "test_setup": {
+            "given": "1000 tasks exist in the database.",
+            "when": "GET /api/tasks is called.",
+            "then": "All 1000 tasks are returned in the response."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_unauthorized_negative",
+          "name": "Fetch tasks without authentication",
+          "description": "Verify that the endpoint returns an error when called without proper authentication (if required).",
+          "type": "negative",
+          "request_method": "GET",
+          "request_url": "/api/tasks",
+          "request_headers": {},
+          "request_body_json": {},
+          "response_status_code": 401,
+          "response_body_json": {
+            "detail": "Authentication credentials were not provided."
+          },
+          "test_setup": {
+            "given": "Authentication is required and no credentials are provided.",
+            "when": "GET /api/tasks is called.",
+            "then": "A 401 error is returned."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        },
+        {
+          "id": "get_all_tasks_method_not_allowed_negative",
+          "name": "Call endpoint with unsupported method",
+          "description": "Verify that the endpoint returns an error when called with an unsupported HTTP method.",
+          "type": "negative",
+          "request_method": "POST",
+          "request_url": "/api/tasks",
+          "request_headers": {
+            "Content-Type": "application/json"
+          },
+          "request_body_json": {},
+          "response_status_code": 405,
+          "response_body_json": {
+            "detail": "Method Not Allowed"
+          },
+          "test_setup": {
+            "given": "The endpoint only supports GET requests.",
+            "when": "POST /api/tasks is called.",
+            "then": "A 405 error is returned."
+          },
+          "implementation_id": "backend_tasks_get_all_endpoint"
+        }
+      ]
+    }
+  ]
+}
