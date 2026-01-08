@@ -1,0 +1,29 @@
+{
+  "breakdowns": [
+    {
+      "id": "event_management",
+      "header": "Manage Events",
+      "description": "Enables users to create, view, edit, and delete events, including specifying event name, description, start date, and end date.",
+      "conditions": [],
+      "change_status": "new"
+    },
+    {
+      "id": "task_management",
+      "header": "Manage Tasks",
+      "description": "Allows users to create, view, edit, and delete tasks, including specifying task title, description, and status (To Do, In Progress, Completed).",
+      "conditions": [],
+      "change_status": "new"
+    },
+    {
+      "id": "task_assignment",
+      "header": "Assign and Organize Tasks by Event",
+      "description": "Enables users to assign tasks to events during creation or later, view all tasks for a specific event, reassign tasks to different events, and remove tasks from events.",
+      "conditions": [
+        "Each task must be associated with exactly one event"
+      ],
+      "change_status": "new"
+    }
+  ],
+  "last_updated": "2026-01-08T16:30:44.907958",
+  "version": "1.0"
+}
