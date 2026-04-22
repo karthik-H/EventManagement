@@ -6,7 +6,7 @@ A web application to manage events and their associated tasks.
 ## 2. Requirements
 
 ### 2.1 Event Management 
-- **Create**: Name, Description, Start date, End date.
+- **Create**: Name, Description, Start date, End date, tag.
 - **Read**: List of all events.
 - **Update**: Edit details.
 - **Delete**: Remove event.
